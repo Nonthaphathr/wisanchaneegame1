@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>สนุกสนานวิสรรชนีย์ | พัฒนาโดยครูนนทพัทธ์ หิรัญเรือง</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700;900&family=Mitr:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg1:#1a0b3d; --bg2:#3b1f7a; --bg3:#7b2ff7;
+  --card:rgba(255,255,255,.10); --cardS:rgba(255,255,255,.18);
+  --txt:#fff; --muted:rgba(255,255,255,.72);
+  --ok:#22c55e; --no:#ef4444; --warn:#f59e0b;
+  --c1:#ef4444; --c2:#3b82f6; --c3:#f59e0b; --c4:#22c55e;
+  --r:18px;
+  --safeB:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;min-height:100%}
+html{background:#2e1065}
+body{
+  font-family:'Noto Sans Thai','Mitr',system-ui,sans-serif;
+  color:var(--txt);
+  background:linear-gradient(160deg,var(--bg1) 0%,var(--bg2) 45%,#5b21b6 100%);
+  background-attachment:fixed;
+  min-height:100dvh;overflow-x:hidden;
+  -webkit-text-size-adjust:100%;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(700px 500px at 12% 8%, rgba(236,72,153,.28), transparent 60%),
+    radial-gradient(600px 500px at 88% 20%, rgba(56,189,248,.22), transparent 60%),
+    radial-gradient(700px 600px at 50% 100%, rgba(250,204,21,.14), transparent 60%);
+}
+#app{position:relative;z-index:1;min-height:100dvh;display:flex;flex-direction:column}
+.wrap{width:100%;max-width:1080px;margin:0 auto;padding:16px 16px calc(24px + var(--safeB))}
+.screen{display:none;animation:fade .28s ease}
+.screen.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ---------- generic ---------- */
+.card{background:var(--card);border:1px solid rgba(255,255,255,.16);border-radius:var(--r);padding:18px;backdrop-filter:blur(10px);box-shadow:0 10px 34px rgba(0,0,0,.24)}
+.card+.card{margin-top:14px}
+h1,h2,h3{margin:0 0 10px;font-family:'Mitr','Noto Sans Thai',sans-serif;font-weight:600;line-height:1.35}
+h1{font-size:clamp(26px,6vw,44px)}
+h2{font-size:clamp(19px,3.6vw,26px)}
+h3{font-size:clamp(16px,3vw,19px)}
+p{margin:0 0 10px;line-height:1.6}
+.muted{color:var(--muted);font-size:14px}
+.center{text-align:center}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row.between{justify-content:space-between;align-items:center}
+.grow{flex:1 1 160px;min-width:0}
+.hide{display:none !important}
+
+button,.btn{
+  font-family:inherit;font-size:17px;font-weight:600;color:#fff;cursor:pointer;
+  border:none;border-radius:14px;padding:14px 20px;
+  background:linear-gradient(135deg,#8b5cf6,#d946ef);
+  box-shadow:0 6px 0 rgba(0,0,0,.22);transition:transform .08s, filter .15s;
+  touch-action:manipulation;
+}
+button:active,.btn:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(0,0,0,.22)}
+button:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.4)}
+.btn-lg{font-size:20px;padding:18px 26px;width:100%}
+.btn-ghost{background:rgba(255,255,255,.14);box-shadow:0 5px 0 rgba(0,0,0,.18)}
+.btn-ok{background:linear-gradient(135deg,#16a34a,#4ade80)}
+.btn-warn{background:linear-gradient(135deg,#d97706,#fbbf24)}
+.btn-no{background:linear-gradient(135deg,#dc2626,#f87171)}
+.btn-sm{font-size:14px;padding:9px 14px;border-radius:11px;box-shadow:0 4px 0 rgba(0,0,0,.2)}
+
+input,select,textarea{
+  font-family:inherit;font-size:17px;color:#fff;width:100%;
+  background:rgba(0,0,0,.26);border:2px solid rgba(255,255,255,.24);
+  border-radius:13px;padding:13px 15px;outline:none;
+}
+input::placeholder,textarea::placeholder{color:rgba(255,255,255,.45)}
+input:focus,select:focus,textarea:focus{border-color:#f0abfc;background:rgba(0,0,0,.34)}
+select option{color:#111}
+label{display:block;font-size:14px;color:var(--muted);margin:0 0 6px 2px}
+.field{margin-bottom:13px}
+
+.badge{display:inline-block;padding:5px 12px;border-radius:999px;font-size:13px;font-weight:600;background:rgba(255,255,255,.18)}
+.badge.ok{background:rgba(34,197,94,.3)}
+.badge.no{background:rgba(239,68,68,.3)}
+
+.toast{position:fixed;left:50%;bottom:calc(22px + var(--safeB));transform:translateX(-50%);z-index:99;
+  background:rgba(0,0,0,.86);padding:12px 20px;border-radius:13px;font-size:15px;max-width:90vw;text-align:center;
+  opacity:0;pointer-events:none;transition:opacity .25s}
+.toast.on{opacity:1}
+
+/* ---------- brand ---------- */
+.brand{text-align:center;padding:22px 0 8px}
+.brand .logo{font-family:'Mitr',sans-serif;font-weight:700;font-size:clamp(30px,8vw,56px);line-height:1.15;
+  background:linear-gradient(180deg,#fff 30%,#fde68a);-webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:0 6px 22px rgba(0,0,0,.3)}
+.brand .sub{color:var(--muted);font-size:14px;margin-top:4px}
+.credit{text-align:center;color:rgba(255,255,255,.5);font-size:12.5px;padding:16px 0 6px}
+
+/* ---------- emoji picker ---------- */
+.emoji-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:8px;max-height:230px;overflow-y:auto;padding:4px}
+.emoji-grid button{font-size:28px;padding:8px 0;background:rgba(255,255,255,.10);box-shadow:none;border-radius:13px;border:2px solid transparent}
+.emoji-grid button.sel{border-color:#fde047;background:rgba(253,224,71,.24);transform:scale(1.06)}
+
+/* ---------- lobby ---------- */
+.pin-box{text-align:center;background:rgba(0,0,0,.28);border-radius:20px;padding:16px;border:2px dashed rgba(255,255,255,.3)}
+.pin-box .pin{font-family:'Mitr',monospace;font-size:clamp(38px,11vw,68px);font-weight:700;letter-spacing:.14em;line-height:1.1}
+#qrBox{background:#fff;padding:12px;border-radius:16px;display:inline-block;line-height:0}
+#qrBox img,#qrBox canvas{display:block;width:200px!important;height:200px!important}
+.players{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+.chip{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.16);padding:8px 14px;border-radius:999px;font-size:15px;
+  animation:pop .3s cubic-bezier(.2,1.4,.4,1)}
+.chip .e{font-size:20px}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* ---------- question ---------- */
+.qtop{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.qnum{font-size:15px;color:var(--muted)}
+.timer{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-family:'Mitr';font-size:26px;font-weight:700;
+  background:conic-gradient(#fde047 var(--p,100%), rgba(255,255,255,.16) 0);position:relative;flex:none}
+.timer span{width:50px;height:50px;border-radius:50%;background:#2e1065;display:grid;place-items:center}
+.timer.low span{color:#fca5a5}
+.prompt{font-size:clamp(15px,3.4vw,19px);color:#fde68a;text-align:center;margin-bottom:10px;font-weight:500}
+.word-big{font-family:'Mitr',sans-serif;font-weight:700;text-align:center;
+  font-size:clamp(46px,15vw,110px);line-height:1.25;padding:18px 10px;letter-spacing:.02em;
+  text-shadow:0 8px 26px rgba(0,0,0,.35);word-break:break-word}
+.answers{display:grid;gap:12px}
+.answers.two{grid-template-columns:1fr 1fr}
+.answers.four{grid-template-columns:1fr 1fr}
+@media(max-width:430px){.answers.four{grid-template-columns:1fr}}
+.ans{
+  min-height:88px;display:flex;align-items:center;justify-content:center;gap:10px;text-align:center;
+  font-size:clamp(17px,4.2vw,24px);font-weight:600;padding:16px;border-radius:16px;color:#fff;
+  box-shadow:0 6px 0 rgba(0,0,0,.26);word-break:break-word;line-height:1.3;
+}
+.ans.a0{background:linear-gradient(135deg,#dc2626,#f87171)}
+.ans.a1{background:linear-gradient(135deg,#2563eb,#60a5fa)}
+.ans.a2{background:linear-gradient(135deg,#d97706,#fbbf24)}
+.ans.a3{background:linear-gradient(135deg,#16a34a,#4ade80)}
+.ans .k{font-size:26px;opacity:.9}
+.ans.dim{opacity:.32;filter:grayscale(.6)}
+.ans.right{outline:5px solid #fff;animation:glow 1s infinite alternate}
+.ans.wrong{opacity:.35}
+@keyframes glow{to{box-shadow:0 0 30px 6px rgba(255,255,255,.75)}}
+.answers.two .ans{min-height:130px;font-size:clamp(18px,5vw,28px);flex-direction:column;gap:4px}
+.answers.two .ans small{font-size:14px;opacity:.9;font-weight:400}
+
+/* ---------- feedback ---------- */
+.fb{text-align:center;padding:24px 12px}
+.fb .big{font-size:clamp(54px,16vw,92px);line-height:1}
+.fb .txt{font-family:'Mitr';font-size:clamp(26px,7vw,42px);font-weight:700;margin:10px 0}
+.fb .pts{font-size:clamp(22px,6vw,34px);font-weight:700;color:#fde047}
+.explain{background:rgba(0,0,0,.3);border-left:5px solid #fde047;border-radius:12px;padding:13px 15px;margin-top:14px;
+  font-size:15px;line-height:1.65;text-align:left}
+
+/* ---------- bars / leaderboard ---------- */
+.bars{display:grid;gap:9px;margin-top:14px}
+.bar{background:rgba(0,0,0,.28);border-radius:11px;overflow:hidden;position:relative;height:44px;display:flex;align-items:center}
+.bar i{position:absolute;left:0;top:0;bottom:0;width:0;transition:width .7s cubic-bezier(.2,.9,.3,1);opacity:.85}
+.bar span{position:relative;padding:0 14px;font-size:15px;font-weight:600;display:flex;width:100%;justify-content:space-between}
+.lb{display:grid;gap:9px;margin-top:12px}
+.lb-item{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.13);border-radius:14px;padding:12px 15px;
+  animation:slide .4s ease backwards}
+@keyframes slide{from{transform:translateX(-24px);opacity:0}to{transform:none;opacity:1}}
+.lb-item .rk{font-family:'Mitr';font-weight:700;font-size:20px;width:34px;text-align:center;flex:none}
+.lb-item .e{font-size:26px;flex:none}
+.lb-item .nm{flex:1;font-size:16px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-item .sc{font-family:'Mitr';font-weight:700;font-size:19px;color:#fde047;flex:none}
+.lb-item.g1{background:linear-gradient(135deg,rgba(253,224,71,.42),rgba(255,255,255,.12))}
+.lb-item.g2{background:linear-gradient(135deg,rgba(203,213,225,.38),rgba(255,255,255,.12))}
+.lb-item.g3{background:linear-gradient(135deg,rgba(217,119,6,.38),rgba(255,255,255,.12))}
+
+/* podium */
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:8px;margin:18px 0}
+.pod{flex:1;max-width:150px;text-align:center}
+.pod .e{font-size:clamp(34px,9vw,52px)}
+.pod .nm{font-size:14px;font-weight:600;margin:4px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pod .bx{border-radius:14px 14px 0 0;display:grid;place-items:center;font-family:'Mitr';font-size:26px;font-weight:700;color:#3b0764}
+.pod.p1 .bx{height:120px;background:linear-gradient(180deg,#fde047,#f59e0b)}
+.pod.p2 .bx{height:92px;background:linear-gradient(180deg,#e2e8f0,#94a3b8)}
+.pod.p3 .bx{height:72px;background:linear-gradient(180deg,#fdba74,#c2410c)}
+.pod .sc{font-size:14px;color:#fde047;font-weight:700;margin-top:6px}
+
+/* ---------- admin ---------- */
+.tabs{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px}
+.tabs button{font-size:15px;padding:10px 16px;background:rgba(255,255,255,.12);box-shadow:none;border-radius:999px;white-space:nowrap}
+.tabs button.on{background:linear-gradient(135deg,#8b5cf6,#d946ef)}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th,td{padding:9px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,.13)}
+th{color:var(--muted);font-weight:600;font-size:13px}
+.tbl-wrap{max-height:52vh;overflow:auto;border-radius:12px;background:rgba(0,0,0,.18)}
+.stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+.stat div{background:rgba(0,0,0,.24);border-radius:13px;padding:12px;text-align:center}
+.stat b{display:block;font-family:'Mitr';font-size:26px;color:#fde047}
+.stat small{color:var(--muted);font-size:12.5px}
+.fab{position:fixed;right:14px;bottom:calc(14px + var(--safeB));z-index:50}
+.fab a{font-size:13px;padding:9px 14px;text-decoration:none}
+.wait-dots span{display:inline-block;width:12px;height:12px;border-radius:50%;background:#fff;margin:0 4px;animation:bnc 1.1s infinite}
+.wait-dots span:nth-child(2){animation-delay:.15s}.wait-dots span:nth-child(3){animation-delay:.3s}
+@keyframes bnc{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-13px);opacity:1}}
+.scoreline{display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,.28);border-radius:14px;padding:12px 16px;margin-bottom:12px}
+.scoreline b{font-family:'Mitr';font-size:22px;color:#fde047}
+</style>
+</head>
+<body>
+<div id="app">
+<div class="wrap">
+
+<!-- ========== HOME ========== -->
+<section id="scHome" class="screen on">
+  <div class="brand">
+    <div class="logo">สนุกสนาน<br>วิสรรชนีย์</div>
+    <div class="sub">เกมทบทวนคำประวิสรรชนีย์ / ไม่ประวิสรรชนีย์</div>
+  </div>
+  <div class="card">
+    <div class="field">
+      <label>รหัสห้อง (PIN) 6 หลัก</label>
+      <input id="inPin" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="• • • • • •"
+        style="text-align:center;font-family:'Mitr';font-size:34px;letter-spacing:.18em">
+    </div>
+    <button class="btn-lg btn-ok" id="btnGoJoin">เข้าร่วมเกม</button>
+  </div>
+  <div class="credit">พัฒนาโดยครูนนทพัทธ์ หิรัญเรือง<br>
+    <a href="#host" style="color:rgba(255,255,255,.55)">สำหรับครู/ผู้ดูแลระบบ</a>
+  </div>
+</section>
+
+<!-- ========== JOIN ========== -->
+<section id="scJoin" class="screen">
+  <div class="brand"><div class="logo" style="font-size:clamp(24px,7vw,40px)">ตั้งชื่อผู้เล่น</div>
+    <div class="sub">ห้อง <b id="joinPinTxt"></b></div></div>
+  <div class="card">
+    <div class="field">
+      <label>ชื่อที่จะแสดงบนกระดาน</label>
+      <input id="inName" maxlength="18" placeholder="เช่น น้องบีม ม.5/1">
+    </div>
+    <label>เลือกตัวละครของคุณ</label>
+    <div class="emoji-grid" id="emojiGrid"></div>
+    <button class="btn-lg btn-ok" id="btnJoin" style="margin-top:14px">เข้าห้องรอ</button>
+    <button class="btn-lg btn-ghost" id="btnJoinBack" style="margin-top:10px">ย้อนกลับ</button>
+  </div>
+</section>
+
+<!-- ========== PLAYER LOBBY ========== -->
+<section id="scWait" class="screen">
+  <div class="brand">
+    <div id="waitEmoji" style="font-size:76px">🙂</div>
+    <div class="logo" style="font-size:clamp(22px,6vw,34px)" id="waitName">—</div>
+    <div class="sub">คุณอยู่ในห้องแล้ว! รอครูเริ่มเกม…</div>
+  </div>
+  <div class="card center">
+    <div class="wait-dots"><span></span><span></span><span></span></div>
+    <p class="muted" style="margin-top:14px">ผู้เล่นในห้องตอนนี้: <b id="waitCount">0</b> คน</p>
+    <div class="players" id="waitPlayers"></div>
+  </div>
+</section>
+
+<!-- ========== PLAYER GAME ========== -->
+<section id="scPlay" class="screen">
+  <div class="scoreline">
+    <span id="pMe">🙂 ผู้เล่น</span>
+    <b id="pScore">0</b>
+  </div>
+  <div class="qtop">
+    <div class="qnum">ข้อ <b id="pQn">1</b> / <span id="pQt">10</span></div>
+    <div class="timer" id="pTimer"><span>0</span></div>
+  </div>
+  <div class="card" style="padding:14px">
+    <div class="prompt" id="pPrompt">—</div>
+    <div class="word-big" id="pWord">—</div>
+  </div>
+  <div class="answers" id="pAnswers" style="margin-top:14px"></div>
+  <div id="pLocked" class="card center hide" style="margin-top:14px">
+    <div style="font-size:46px" id="pLockEmoji">✅</div>
+    <h3 style="margin:8px 0 0">ส่งคำตอบแล้ว!</h3>
+    <p class="muted">รอเพื่อน ๆ ตอบให้ครบ…</p>
+    <div class="wait-dots"><span></span><span></span><span></span></div>
+  </div>
+</section>
+
+<!-- ========== PLAYER RESULT (per question) ========== -->
+<section id="scFb" class="screen">
+  <div class="card fb">
+    <div class="big" id="fbIcon">✅</div>
+    <div class="txt" id="fbTxt">ถูกต้อง!</div>
+    <div class="pts" id="fbPts">+0 คะแนน</div>
+    <p class="muted" id="fbStreak"></p>
+    <div class="explain" id="fbExplain"></div>
+  </div>
+  <div class="card center" style="margin-top:12px">
+    <p class="muted" style="margin:0">คะแนนรวม</p>
+    <div style="font-family:'Mitr';font-size:38px;font-weight:700;color:#fde047" id="fbTotal">0</div>
+    <p class="muted" style="margin:0">อันดับที่ <b id="fbRank">-</b> จาก <span id="fbOf">-</span> คน</p>
+  </div>
+</section>
+
+<!-- ===== prank launcher (inside feedback) ===== -->
+<div class="card" id="prankBar" style="margin-top:12px;display:none">
+  <div class="row between">
+    <div><h3 style="margin:0">🎁 ไอเทมแกล้งเพื่อน</h3>
+      <span class="muted">เหลือ <b id="prankLeft">0</b> ชิ้น — ใช้ได้ก่อนขึ้นข้อถัดไป</span></div>
+    <button class="btn-sm btn-warn" id="btnPrank">ใช้ไอเทม</button>
+  </div>
+  <p class="muted" id="prankDone" style="margin:8px 0 0;display:none"></p>
+</div>
+
+<!-- ===== prank modal ===== -->
+<div id="prankModal" class="screen" style="position:fixed;inset:0;z-index:80;background:rgba(10,2,30,.93);overflow-y:auto;padding:18px;display:none">
+  <div style="max-width:560px;margin:0 auto">
+    <h2 class="center">เลือกลูกเล่นที่จะแกล้ง</h2>
+    <div class="answers four" id="prankTypes"></div>
+    <h3 style="margin-top:18px">เลือกเป้าหมาย</h3>
+    <div class="field"><input id="prankSearch" placeholder="🔎 พิมพ์ชื่อเพื่อนเพื่อค้นหา"></div>
+    <div class="lb" id="prankTargets" style="max-height:40vh;overflow-y:auto"></div>
+    <button class="btn-lg btn-ghost" id="prankClose" style="margin-top:14px">ปิด</button>
+  </div>
+</div>
+
+<!-- ===== prank incoming banner ===== -->
+<div id="hexBanner" style="position:fixed;left:50%;top:14%;transform:translate(-50%,-50%) scale(.4);z-index:90;
+  background:linear-gradient(135deg,#d946ef,#f59e0b);padding:16px 26px;border-radius:18px;text-align:center;
+  box-shadow:0 14px 40px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.2,1.5,.4,1);max-width:92vw">
+  <div style="font-size:40px" id="hexIcon">🌫️</div>
+  <div style="font-family:'Mitr';font-size:20px;font-weight:700" id="hexTitle">โดนแกล้ง!</div>
+  <div style="font-size:14px;opacity:.95" id="hexBy">จาก —</div>
+</div>
+
+<!-- ========== PLAYER FINAL ========== -->
+<section id="scEnd" class="screen">
+  <div class="brand"><div class="logo" style="font-size:clamp(26px,7vw,42px)">จบเกมแล้ว!</div></div>
+  <div class="card center">
+    <div style="font-size:66px" id="endEmoji">🎉</div>
+    <div style="font-family:'Mitr';font-size:26px;font-weight:700" id="endName">—</div>
+    <div class="badge" style="font-size:16px;margin-top:8px">อันดับที่ <b id="endRank">-</b></div>
+    <div style="font-family:'Mitr';font-size:44px;font-weight:700;color:#fde047;margin-top:10px" id="endScore">0</div>
+    <p class="muted" id="endDetail"></p>
+  </div>
+  <div class="card">
+    <h3>🏆 อันดับผู้เล่น</h3>
+    <div class="lb" id="endLb"></div>
+  </div>
+  <button class="btn-lg btn-ghost" onclick="location.hash='';location.reload()" style="margin-top:12px">เล่นอีกครั้ง</button>
+</section>
+
+<!-- ========== HOST: LOGIN ========== -->
+<section id="scHostLogin" class="screen">
+  <div class="brand"><div class="logo" style="font-size:clamp(24px,7vw,40px)">ระบบครูผู้ควบคุมเกม</div>
+    <div class="sub">สนุกสนานวิสรรชนีย์</div></div>
+  <div class="card">
+    <div class="field"><label>รหัสผ่านผู้ดูแล</label>
+      <input id="inAdminPass" type="password" placeholder="ใส่รหัสผ่าน"></div>
+    <button class="btn-lg" id="btnAdminLogin">เข้าสู่ระบบ</button>
+    <button class="btn-lg btn-ghost" id="btnAdminBack" style="margin-top:10px">กลับหน้าผู้เล่น</button>
+    <p class="muted center" style="margin-top:12px">รหัสเริ่มต้น: <b>krunont</b> (แก้ไขได้ที่ตัวแปร ADMIN_PASS ในไฟล์)</p>
+  </div>
+</section>
+
+<!-- ========== HOST: MENU / SETUP ========== -->
+<section id="scHostMenu" class="screen">
+  <div class="brand"><div class="logo" style="font-size:clamp(22px,6vw,36px)">แผงควบคุมครู</div></div>
+  <div class="tabs">
+    <button class="on" data-tab="tabNew">🎮 สร้างห้องเล่น</button>
+    <button data-tab="tabWords">📚 คลังคำศัพท์</button>
+    <button data-tab="tabRules">📖 ข้อสอบหลักเกณฑ์</button>
+    <button data-tab="tabHelp">❔ วิธีใช้</button>
+  </div>
+
+  <div id="tabNew" class="tabpane">
+    <div class="card">
+      <h3>ตั้งค่าเกม</h3>
+      <div class="row">
+        <div class="grow field"><label>จำนวนข้อ</label>
+          <select id="cfgCount"><option>10</option><option selected>15</option><option>20</option><option>25</option><option>30</option></select></div>
+        <div class="grow field"><label>เวลาต่อข้อ (วินาที)</label>
+          <select id="cfgTime"><option>10</option><option value="15" selected>15</option><option>20</option><option>25</option><option>30</option></select></div>
+      </div>
+      <div class="row">
+        <div class="grow field"><label>สัดส่วนข้อ</label>
+          <select id="cfgMix">
+            <option value="mix" selected>ผสม: ซ้าย-ขวา + 4 ตัวเลือก + หลักเกณฑ์</option>
+            <option value="sw">เฉพาะ ซ้าย-ขวา (แยกประเภทคำ)</option>
+            <option value="mc">เฉพาะ 4 ตัวเลือก</option>
+            <option value="rule">เฉพาะ ข้อสอบหลักเกณฑ์</option>
+          </select></div>
+        <div class="grow field"><label>ไอเทมแกล้งเพื่อน / คน</label>
+          <select id="cfgPrank"><option value="0">ปิดใช้งาน</option><option value="1">1 ชิ้น</option><option value="2" selected>2 ชิ้น</option><option value="3">3 ชิ้น</option></select></div>
+      </div>
+      <button class="btn-lg btn-ok" id="btnCreateRoom">สร้างห้อง + แสดง QR Code</button>
+    </div>
+    <div class="card">
+      <h3>เข้าควบคุมห้องเดิม</h3>
+      <div class="row">
+        <input class="grow" id="inResumePin" inputmode="numeric" maxlength="6" placeholder="PIN ห้องเดิม">
+        <button class="btn-ghost" id="btnResume">เข้าห้อง</button>
+      </div>
+      <p class="muted" style="margin-top:8px">ใช้เมื่อจอครูรีเฟรชหรือปิดไปโดยไม่ตั้งใจ</p>
+    </div>
+  </div>
+
+  <div id="tabWords" class="tabpane hide">
+    <div class="card">
+      <div class="row between"><h3 style="margin:0">คลังคำศัพท์</h3>
+        <span class="badge">ทั้งหมด <b id="wCount">0</b> คำ</span></div>
+      <div class="row" style="margin-top:10px">
+        <input class="grow" id="inWord" placeholder="พิมพ์คำ เช่น กระดาษ">
+        <select id="inWordType" style="width:auto;min-width:170px">
+          <option value="pra">ประวิสรรชนีย์</option>
+          <option value="nopra">ไม่ประวิสรรชนีย์</option>
+        </select>
+        <button class="btn-ok btn-sm" id="btnAddWord">เพิ่มคำ</button>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <input class="grow" id="inWordSearch" placeholder="🔎 ค้นหาคำในคลัง">
+        <button class="btn-sm btn-ghost" id="btnExportWords">ส่งออก .txt</button>
+        <button class="btn-sm btn-ghost" id="btnResetWords">คืนค่าคลังตั้งต้น</button>
+      </div>
+      <div class="tbl-wrap" style="margin-top:12px">
+        <table><thead><tr><th style="width:44px">#</th><th>คำ</th><th style="width:150px">ประเภท</th><th style="width:64px"></th></tr></thead>
+        <tbody id="wordRows"></tbody></table>
+      </div>
+      <button class="btn-lg" id="btnSaveWords" style="margin-top:12px">💾 บันทึกคลังคำขึ้น Firestore</button>
+    </div>
+  </div>
+
+  <div id="tabRules" class="tabpane hide">
+    <div class="card">
+      <div class="row between"><h3 style="margin:0">ข้อสอบหลักเกณฑ์ (4 ตัวเลือก)</h3>
+        <span class="badge">ทั้งหมด <b id="rCount">0</b> ข้อ</span></div>
+      <div class="tbl-wrap" style="margin-top:12px">
+        <table><thead><tr><th style="width:40px">#</th><th>คำถาม</th><th style="width:64px"></th></tr></thead>
+        <tbody id="ruleRows"></tbody></table>
+      </div>
+      <div style="margin-top:14px">
+        <div class="field"><label>คำถาม</label><input id="inRQ" placeholder="เช่น ข้อใดเป็นคำที่ต้องประวิสรรชนีย์"></div>
+        <div class="row">
+          <div class="grow field"><label>ตัวเลือก 1 (คำตอบถูก ✅)</label><input id="inRA0"></div>
+          <div class="grow field"><label>ตัวเลือก 2</label><input id="inRA1"></div>
+        </div>
+        <div class="row">
+          <div class="grow field"><label>ตัวเลือก 3</label><input id="inRA2"></div>
+          <div class="grow field"><label>ตัวเลือก 4</label><input id="inRA3"></div>
+        </div>
+        <div class="field"><label>คำอธิบายเฉลย</label><input id="inREx" placeholder="อธิบายหลักเกณฑ์สั้น ๆ"></div>
+        <button class="btn-ok" id="btnAddRule">เพิ่มข้อสอบ</button>
+        <button class="btn-ghost" id="btnResetRules">คืนค่าตั้งต้น</button>
+      </div>
+      <button class="btn-lg" id="btnSaveRules" style="margin-top:12px">💾 บันทึกข้อสอบขึ้น Firestore</button>
+    </div>
+  </div>
+
+  <div id="tabHelp" class="tabpane hide">
+    <div class="card">
+      <h3>วิธีใช้งาน</h3>
+      <p>1) กด <b>สร้างห้อง</b> → จอครูจะแสดง PIN และ QR Code ให้ฉายขึ้นโปรเจกเตอร์</p>
+      <p>2) นักเรียนสแกน QR (หรือเปิดเว็บแล้วกรอก PIN) → ใส่ชื่อ เลือกตัวละคร → รอในห้อง</p>
+      <p>3) เมื่อครบแล้วครูกด <b>เริ่มเกม</b> ระบบจะปล่อยคำถามทีละข้อพร้อมนาฬิกาจับเวลา</p>
+      <p>4) คะแนน = ตอบถูก 1000 คะแนน ลดหลั่นตามเวลาที่ใช้ (เร็วได้มาก) + โบนัสตอบถูกติดต่อกัน</p>
+      <p>5) ระหว่างเกมจอครูจะแสดง <b>Dashboard อันดับสด</b> และกราฟการกระจายคำตอบ</p>
+      <p>6) จบเกมมีสรุปแท่นโพเดียม + ตารางอันดับ และดาวน์โหลดผลเป็นไฟล์ .csv ได้</p>
+      <h3 style="margin-top:16px">ประหยัดโควตา Firestore</h3>
+      <p class="muted">ระบบออกแบบให้ 1 รอบเกม (60 คน × 15 ข้อ) ใช้ประมาณ <b>2,000 writes / 5,000 reads</b> ซึ่งอยู่ในโควตาฟรี (20,000 writes / 50,000 reads ต่อวัน) เล่นได้ราว 8–9 รอบต่อวันอย่างสบาย</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== HOST: LOBBY ========== -->
+<section id="scHostLobby" class="screen">
+  <div class="row between" style="margin-bottom:12px">
+    <h2 style="margin:0">ห้องรอผู้เล่น</h2>
+    <button class="btn-sm btn-no" id="btnCancelRoom">ยกเลิกห้อง</button>
+  </div>
+  <div class="card">
+    <div class="row" style="align-items:center;justify-content:center;gap:22px">
+      <div class="pin-box grow" style="flex:1 1 260px">
+        <div class="muted">เข้าเล่นที่ <b id="siteUrl"></b></div>
+        <div class="muted" style="margin-top:8px">รหัสห้อง (PIN)</div>
+        <div class="pin" id="hostPin">------</div>
+      </div>
+      <div class="center" style="flex:0 0 auto">
+        <div id="qrBox"></div>
+        <div class="muted" style="margin-top:8px">สแกนเพื่อเข้าเล่น</div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="row between"><h3 style="margin:0">ผู้เล่นในห้อง</h3>
+      <span class="badge ok" style="font-size:17px"><b id="hostCount">0</b> คน</span></div>
+    <div class="players" id="hostPlayers"></div>
+  </div>
+  <button class="btn-lg btn-ok" id="btnStartGame" style="margin-top:14px">🚀 เริ่มเกม</button>
+</section>
+
+<!-- ========== HOST: GAME ========== -->
+<section id="scHostGame" class="screen">
+  <div class="qtop">
+    <div class="qnum">ข้อ <b id="hQn">1</b> / <span id="hQt">15</span> &nbsp;•&nbsp; PIN <b id="hPin">-</b></div>
+    <div class="timer" id="hTimer"><span>0</span></div>
+  </div>
+  <div class="card" style="padding:14px">
+    <div class="prompt" id="hPrompt">—</div>
+    <div class="word-big" id="hWord">—</div>
+  </div>
+  <div class="answers" id="hAnswers" style="margin-top:12px"></div>
+
+  <div class="card" style="margin-top:12px">
+    <div class="row between">
+      <span>ตอบแล้ว <b id="hAnsCount">0</b> / <span id="hPlayerCount">0</span> คน</span>
+      <div class="row" style="gap:8px">
+        <button class="btn-sm btn-warn" id="btnSkip">⏭ เฉลยเลย</button>
+        <button class="btn-sm btn-no" id="btnEndNow">⏹ จบเกม</button>
+      </div>
+    </div>
+    <div class="bars" id="hBars"></div>
+    <div class="explain hide" id="hExplain"></div>
+    <button class="btn-lg btn-ok hide" id="btnNextQ" style="margin-top:12px">ข้อถัดไป ▶</button>
+  </div>
+
+  <div class="card" style="margin-top:12px">
+    <div class="row between"><h3 style="margin:0">📊 Dashboard อันดับสด</h3>
+      <div class="row" style="gap:6px">
+        <button class="btn-sm btn-ghost" id="btnLbMore">ดูทั้งหมด</button>
+      </div>
+    </div>
+    <div class="stat" style="margin-top:10px">
+      <div><b id="stAvg">0</b><small>คะแนนเฉลี่ย</small></div>
+      <div><b id="stCorrect">0%</b><small>ตอบถูกข้อนี้</small></div>
+      <div><b id="stFast">-</b><small>ตอบถูกเร็วสุด</small></div>
+      <div><b id="stStreak">-</b><small>สตรีคสูงสุด</small></div>
+    </div>
+    <div class="tbl-wrap" style="margin-top:12px;max-height:44vh">
+      <table><thead><tr><th style="width:44px">อันดับ</th><th>ผู้เล่น</th><th style="width:64px">ถูก</th><th style="width:62px">สตรีค</th><th style="width:82px">คะแนน</th></tr></thead>
+      <tbody id="hLbRows"></tbody></table>
+    </div>
+  </div>
+</section>
+
+<!-- ========== HOST: FINAL ========== -->
+<section id="scHostEnd" class="screen">
+  <div class="brand"><div class="logo" style="font-size:clamp(26px,7vw,44px)">🏆 สรุปผลการแข่งขัน</div>
+    <div class="sub">สนุกสนานวิสรรชนีย์ — ห้อง <b id="endPinTxt"></b></div></div>
+  <div class="card">
+    <div class="podium" id="hostPodium"></div>
+  </div>
+  <div class="card">
+    <div class="row between"><h3 style="margin:0">ตารางอันดับทั้งหมด</h3>
+      <button class="btn-sm btn-ghost" id="btnCsv">⬇ ดาวน์โหลด .csv</button></div>
+    <div class="tbl-wrap" style="margin-top:10px">
+      <table><thead><tr><th style="width:44px">#</th><th>ผู้เล่น</th><th style="width:70px">ตอบถูก</th><th style="width:90px">คะแนน</th></tr></thead>
+      <tbody id="hostEndRows"></tbody></table>
+    </div>
+  </div>
+  <button class="btn-lg btn-ghost" id="btnBackMenu" style="margin-top:14px">กลับแผงควบคุม</button>
+</section>
+
+</div><!-- /wrap -->
+</div><!-- /app -->
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, addDoc,
+  onSnapshot, getDocs, query, where, writeBatch, serverTimestamp, deleteField
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+/* =======================================================================
+   สนุกสนานวิสรรชนีย์  |  พัฒนาโดยครูนนทพัทธ์ หิรัญเรือง
+   ======================================================================= */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAd_yWiX7MxmrMAYE1Dv7rOQe7_y_jc9aY",
+  authDomain: "wisanchaneegame.firebaseapp.com",
+  projectId: "wisanchaneegame",
+  storageBucket: "wisanchaneegame.firebasestorage.app",
+  messagingSenderId: "998828473509",
+  appId: "1:998828473509:web:90a84be8a5adda7d49a14c"
+};
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+const ADMIN_PASS = "krunont";           // << เปลี่ยนรหัสผ่านครูได้ที่นี่
+const BASE_SCORE = 1000;                // คะแนนเต็มต่อข้อ
+const STREAK_BONUS = 100;               // โบนัสต่อสตรีค (สูงสุด 5)
+
+/* ---------------- helpers ---------------- */
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rnd = n => Math.floor(Math.random()*n);
+const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=rnd(i+1);[a[i],a[j]]=[a[j],a[i]];} return a; };
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+let toastT;
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),2400); }
+function show(id){
+  $$('.screen').forEach(s=>{ if(s.id!=='prankModal') s.classList.remove('on'); });
+  const el=$('#'+id); if(el) el.classList.add('on');
+  const pb=$('#prankBar'); if(pb && id!=='scFb') pb.style.display='none';
+  if(id!=='scFb'){ const pm=$('#prankModal'); if(pm) pm.style.display='none'; }
+  window.scrollTo(0,0);
+}
+
+/* ---------------- default word bank ---------------- */
+const DEF_PRA = ["กะทิ","กระจก","กระดาษ","กระเป๋า","กระบะ","ตะกร้า","มะลิ","มะนาว","มะละกอ","มะยม","ทะเล","ละออง","สะอาด","สะพาน","ปะการัง","บะหมี่","จะเข้","ระนาด","กะละมัง","ชะซอน","ทะนง","ตะวัน","พะเยา","ระยะ","วาระ","นะคะ","ชะลอม","ชะนี","ตะเกียง","กระทะ","กระต่าย","ชะตา","ธุระ","ปะทะ","มะม่วง","ประตู","ประถม","ชนะ","กะหรี่","ตะปู","ละคร","สะใภ้","กระซิบ","ละมุด","ระฆัง","สระน้ำ","ประโยชน์","ปะปน","มะพร้าว","จังหวะ"];
+const DEF_NOPRA = ["ขนม","ขมวด","ฉลาม","ถนน","ตลาด","ตลอด","สมอง","สบาย","สยาม","สลาม","ขยัน","ขยาย","อร่อย","องุ่น","อนาคต","พยาบาล","ธนาคาร","ชนิด","พลัง","ทนาย","มนุษย์","พฤหัสบดี","วิทยุ","สกปรก","จรวด","เมล็ด","ผลไม้","สถิติ","มรดก","คมนาคม","กนก","ขโมย","จรัส","ฉลาด","ชบา","ทหาร","ทิวา","นคร","พนัน","พยาน","มารยาท","ยมก","วนิดา","ศตวรรษ","สถานี","สมาคม","สหาย","อมฤต","กษัตริย์","ชรา"];
+const defWords = () => [...DEF_PRA.map(w=>({w,t:'pra'})), ...DEF_NOPRA.map(w=>({w,t:'nopra'}))];
+
+const DEF_RULES = [
+ {q:"คำไทยแท้ที่ออกเสียง อะ เต็มเสียง ต้องเขียนอย่างไร",a:["ประวิสรรชนีย์ทุกพยางค์","ไม่ประวิสรรชนีย์","ประวิสรรชนีย์เฉพาะพยางค์ท้าย","เขียนอย่างไรก็ได้"],x:"คำไทยแท้ที่ออกเสียง อะ เต็มเสียง ให้ประวิสรรชนีย์ทุกพยางค์ เช่น กะทิ กะเพรา ปะทะ สะเก็ด"},
+ {q:"ข้อใดคือคำที่เกิดจากการ “กร่อนเสียง” แล้วต้องประวิสรรชนีย์",a:["หมากพร้าว → มะพร้าว","ชิด → ชนิด","บวช → ผนวช","จม → จรจม"],x:"คำ ๒ คำรวมกันแล้วคำหน้ากร่อนเสียงเป็น อะ ให้ประวิสรรชนีย์ เช่น ตาวัน→ตะวัน หมากม่วง→มะม่วง"},
+ {q:"พยางค์หน้าที่ออกเสียงแบบใด จึงต้องประวิสรรชนีย์ในคำบาลี–สันสกฤต",a:["กระ / ตระ / ประ / พระ","สม / สถ / สภ","ขน / ขย / ขจ","มร / มล / มน"],x:"พยางค์หน้าออกเสียง กระ ตระ ประ พระ ให้ประวิสรรชนีย์ เช่น ตระกูล ประโยชน์ พระพุทธ"},
+ {q:"คำบาลี–สันสกฤตที่พยางค์สุดท้ายออกเสียง อะ ต้องเขียนอย่างไร",a:["ประวิสรรชนีย์ เช่น ลักษณะ คณะ","ไม่ประวิสรรชนีย์ เช่น ลักษณ คณ","ใส่ไม้ไต่คู้","ใส่ทัณฑฆาต"],x:"พยางค์สุดท้ายของคำออกเสียง อะ ให้ประวิสรรชนีย์ เช่น ลักษณะ คณะ โลหะ ศิลปะ อิสระ"},
+ {q:"เมื่อนำคำ “คณะ” ไปสมาสกับ “บดี” จะเขียนอย่างไร",a:["คณบดี (ไม่ประวิสรรชนีย์)","คณะบดี (ประวิสรรชนีย์)","คณบดีะ","คณ-บดี"],x:"เมื่อสมาสแล้วพยางค์นั้นไม่ใช่พยางค์สุดท้ายอีกต่อไป จึงไม่ประวิสรรชนีย์ เช่น ธุระ+กิจ→ธุรกิจ อิสระ+ภาพ→อิสรภาพ"},
+ {q:"พยางค์ที่ออกเสียง อะ กึ่งเสียง หรือเป็นอักษรนำ ต้องเขียนอย่างไร",a:["ไม่ประวิสรรชนีย์ เช่น ขนม ถนน","ประวิสรรชนีย์ เช่น ขะนม","ใส่ไม้หันอากาศ","ใส่สระอา"],x:"เสียง อะ กึ่งเสียงหรืออักษรนำ ไม่ต้องประวิสรรชนีย์ เช่น ขนม ขนุน ขโมย ถนน สนุก พยุง"},
+ {q:"ข้อใดเป็นคำไทยแท้ที่ “ไม่ประวิสรรชนีย์” มาแต่เดิม",a:["ณ  ธ  บ่  พณ","กะ ตะ สะ ประ","มะ ระ ละ ชะ","จะ วะ นะ คะ"],x:"คำไทยแท้กลุ่ม ณ ธ บ่ พณ (พณฯ) ไม่ประวิสรรชนีย์มาแต่เดิม"},
+ {q:"คำที่แผลงมาจากคำพยางค์เดียว เช่น ชิด → ชนิด ต้องเขียนอย่างไร",a:["ไม่ประวิสรรชนีย์","ประวิสรรชนีย์","ใส่ทัณฑฆาต","ซ้ำพยัญชนะ"],x:"คำที่แผลงมาจากคำพยางค์เดียวไม่ต้องประวิสรรชนีย์ เช่น ชุ่ม→ชอุ่ม บวช→ผนวช ขาน→ขนาน"},
+ {q:"คำที่ยืมจากภาษาเขมรส่วนมากเขียนอย่างไร",a:["ไม่ประวิสรรชนีย์ เช่น ขจี ผกา ถนน","ประวิสรรชนีย์ทั้งหมด","ประวิสรรชนีย์เฉพาะพยางค์แรก","ใช้ไม้ยมก"],x:"คำเขมรส่วนมากไม่ประวิสรรชนีย์ เช่น ขจี ผกา ผจญ สไบ ฉบับ สนอง สดับ สนุก จมูก ถนน"},
+ {q:"คำที่ลดรูป “ร” ออกจากคำเดิม เช่น ตระกร้า → ตะกร้า ต้องเขียนอย่างไร",a:["ประวิสรรชนีย์","ไม่ประวิสรรชนีย์","คงรูปเดิม","ใส่ไม้ไต่คู้"],x:"คำที่ลดรูป ร ออก ต้องประวิสรรชนีย์ เช่น กระท้อน→กะท้อน จระเข้→จะเข้ ตระกร้า→ตะกร้า"},
+ {q:"ข้อใดเป็นคำยืมภาษาต่างประเทศที่ออกเสียง อะ เต็มเสียง จึงประวิสรรชนีย์",a:["บะหมี่  ซากุระ  กะหรี่","อเมริกา  สลัด  ไอศกรีม","ถนน  ขนม  ตลาด","มรดก  วิทยา  กติกา"],x:"คำยืมที่ออกเสียง อะ เต็มเสียง ให้ประวิสรรชนีย์ เช่น บะหมี่ (จีน) ซากุระ (ญี่ปุ่น) กะหรี่ กะลาสี"},
+ {q:"คำยืมต่างประเทศที่พยางค์ต้นออกเสียง อะ กึ่งเสียง เขียนอย่างไร",a:["ไม่ประวิสรรชนีย์ เช่น อเมริกา สลัด","ประวิสรรชนีย์ เช่น อะเมริกา สะลัด","ใส่ทัณฑฆาต","ใช้ไม้หันอากาศ"],x:"คำยืมที่พยางค์ต้นออกเสียง อะ กึ่งเสียง ไม่ประวิสรรชนีย์ เช่น อเมริกา ไอศกรีม สลัด"},
+ {q:"คำที่ขึ้นต้นด้วย ส- แบบคำแบบแผน/ราชาศัพท์ เขียนอย่างไร",a:["ไม่ประวิสรรชนีย์ เช่น สวัสดี สถาปนา","ประวิสรรชนีย์ เช่น สะวัสดี","ใช้ไม้ยมก","ใส่สระอิ"],x:"คำขึ้นต้นด้วย ส- เช่น สดมภ์ สวัสดี สวาท สภาพ สถาปนา สถิต ไม่ต้องประวิสรรชนีย์"},
+ {q:"“ครึกครื้น → คระครื้น” เป็นตัวอย่างของหลักเกณฑ์ใด",a:["คำซ้ำในบทร้อยกรองที่พยางค์หน้ากร่อนเสียง","คำสมาส","อักษรนำ","คำเขมร"],x:"คำซ้ำในบทร้อยกรองที่พยางค์หน้ากร่อนเสียงเหลือเป็น อะ ให้ประวิสรรชนีย์ เช่น ริกริก→ระริก รื่นรื่น→ระรื่น"},
+ {q:"คำที่แผลงโดยเติม “ร” เข้าไปกลางคำ เช่น ลี → จรลี เขียนอย่างไร",a:["ไม่ประวิสรรชนีย์","ประวิสรรชนีย์","ใส่ไม้ไต่คู้","ใช้ทัณฑฆาต"],x:"คำที่แผลงโดยเติม ร กลางคำ (นิยมในร้อยกรอง) ไม่ต้องประวิสรรชนีย์ เช่น จม→จรจม ดล→จรดล"},
+ {q:"ข้อใดคือข้อยกเว้นของคำไทยแท้ที่ “ไม่” ประวิสรรชนีย์",a:["ท (ทนาย)  พ (พนักงาน)  ธ  ณ","กะ (กะทิ)  ปะ (ปะทะ)","มะ (มะม่วง)","ระ (ระนาด)"],x:"ข้อยกเว้นคำไทยแท้ที่ไม่ประวิสรรชนีย์ ได้แก่ ท (คน/ท่าน) พ (ผู้/พ่อ) พณ ธ (เธอ/ท่าน) ณ (ใน/ที่)"},
+ {q:"หลักสังเกตเบื้องต้นของการประวิสรรชนีย์คือข้อใด",a:["ออกเสียง อะ เต็มเสียง → ประวิสรรชนีย์","ออกเสียง อะ กึ่งเสียง → ประวิสรรชนีย์","คำยาว → ประวิสรรชนีย์","คำสั้น → ประวิสรรชนีย์"],x:"เสียง อะ เต็มเสียง = ประวิสรรชนีย์ / เสียง อะ กึ่งเสียง = ไม่ประวิสรรชนีย์"},
+ {q:"คำที่แผลงโดยเพิ่มพยางค์หน้าเป็น กะ- ตะ- สะ- เช่น พาน → สะพาน เขียนอย่างไร",a:["ประวิสรรชนีย์","ไม่ประวิสรรชนีย์","ใส่ไม้ทัณฑฆาต","คงรูปเดิม"],x:"คำแผลงที่เพิ่มพยางค์หน้า กะ- ตะ- สะ- ให้ประวิสรรชนีย์ เช่น ท้อน→สะท้อน พาย→สะพาย เพิด→ตะเพิด"},
+ {q:"ข้อใดเขียนถูกต้องตามหลักการประวิสรรชนีย์",a:["มรดก","มะรดก","มระดก","มรดกะ"],x:"มรดก เป็นคำบาลี–สันสกฤตที่พยางค์ต้นออกเสียง อะ กึ่งเสียง จึงไม่ประวิสรรชนีย์"},
+ {q:"ข้อใดเขียนถูกต้องตามหลักการประวิสรรชนีย์",a:["ประโยชน์","ปโยชน์","ประโยชนะ","ปะโหยชน์"],x:"พยางค์หน้าออกเสียง ประ- ให้ประวิสรรชนีย์ จึงเขียน ประโยชน์"}
+];
+
+const EMOJIS = ["🦊","🐯","🐼","🐨","🦁","🐸","🐵","🐧","🐢","🦄","🐝","🦋","🐙","🦉","🐳","🦖","🐰","🐻","🐱","🐶","🦜","🦩","🐬","🦕","🍕","🍔","🍩","🍓","🍉","🌈","⚡","🔥","🌟","🎈","🎩","👑","🚀","⚽","🎸","🎯","🧃","🍿","🌻","🦈","🐞","🦥","🦦","🐲","🍀","💎"];
+
+const PRANKS = [
+  {id:'fog',   e:'🌫️', n:'หมอกบัง',    d:'คำถามเบลอ 4 วินาที'},
+  {id:'flip',  e:'🙃', n:'กลับหัว',     d:'จอพลิกกลับ 5 วินาที'},
+  {id:'mix',   e:'🎭', n:'สลับปุ่ม',    d:'สลับตำแหน่งตัวเลือก'},
+  {id:'rush',  e:'⏱️', n:'เร่งเวลา',    d:'เวลาหายไป 5 วินาที'}
+];
+
+/* =======================================================================
+   คลังคำ / ข้อสอบ  (Firestore: bank/words , bank/rules)
+   ======================================================================= */
+let WORDS = defWords();
+let RULES = DEF_RULES.map(r=>({...r}));
+
+async function loadBank(){
+  try{
+    const [w,r] = await Promise.all([getDoc(doc(db,'bank','words')), getDoc(doc(db,'bank','rules'))]);
+    if(w.exists() && Array.isArray(w.data().items) && w.data().items.length) WORDS = w.data().items;
+    if(r.exists() && Array.isArray(r.data().items) && r.data().items.length) RULES = r.data().items;
+  }catch(e){ console.warn('loadBank',e); }
+}
+
+/* =======================================================================
+   สร้างชุดคำถาม
+   ======================================================================= */
+function mangle(word, type){
+  if(type==='pra'){ return word.replace('ะ',''); }
+  const lead = 'เแโใไ';
+  const i = lead.includes(word[0]) ? 2 : 1;
+  return word.slice(0,i)+'ะ'+word.slice(i);
+}
+function buildQuestions(count, mode){
+  const pra   = WORDS.filter(x=>x.t==='pra').map(x=>x.w);
+  const nopra = WORDS.filter(x=>x.t==='nopra').map(x=>x.w);
+  let plan=[];
+  if(mode==='sw')        plan = Array(count).fill('sw');
+  else if(mode==='mc')   plan = Array(count).fill('mc');
+  else if(mode==='rule') plan = Array(count).fill('rule');
+  else {
+    const nR = Math.max(1, Math.round(count*0.2));
+    const nM = Math.round(count*0.4);
+    plan = [...Array(count-nR-nM).fill('sw'), ...Array(nM).fill('mc'), ...Array(nR).fill('rule')];
+    plan = shuffle(plan);
+  }
+  const allSet=new Set(WORDS.map(x=>x.w));
+  const safe = WORDS.filter(o=>{ const m=mangle(o.w,o.t); return m && m!==o.w && !allSet.has(m); });
+  const srcPool = safe.length>=8 ? safe : WORDS;
+  const usedW=new Set(), usedR=new Set(); const out=[];
+  const pickW = arr => { const pool=arr.filter(w=>!usedW.has(w)); const w=(pool.length?pool:arr)[rnd(pool.length||arr.length)]; usedW.add(w); return w; };
+
+  for(let i=0;i<plan.length;i++){
+    const kind = plan[i];
+    if(kind==='sw'){
+      const isPra = Math.random()<0.5;
+      const w = pickW(isPra?pra:nopra);
+      out.push({ type:'sw', prompt:'คำนี้ “ประวิสรรชนีย์” หรือ “ไม่ประวิสรรชนีย์” ?', word:w,
+        choices:[{t:'ประวิสรรชนีย์',s:'มีรูปสระ -ะ / เสียง อะ เต็ม'},{t:'ไม่ประวิสรรชนีย์',s:'ไม่มีรูป -ะ / เสียง อะ กึ่ง'}],
+        correct: isPra?0:1,
+        explain: isPra ? `“${w}” ออกเสียง อะ เต็มเสียง จึงต้อง <b>ประวิสรรชนีย์</b> (เขียนรูปสระ -ะ)`
+                       : `“${w}” ออกเสียง อะ กึ่งเสียง / เป็นอักษรนำ จึง <b>ไม่ประวิสรรชนีย์</b>` });
+    }
+    else if(kind==='mc'){
+      const v = rnd(4);
+      if(v===0){
+        const c=pickW(pra), ds=shuffle(nopra).slice(0,3);
+        const opts=shuffle([c,...ds]);
+        out.push({type:'mc',prompt:'คำถาม',word:'ข้อใดเป็นคำ “ประวิสรรชนีย์”',choices:opts.map(t=>({t})),correct:opts.indexOf(c),
+          explain:`“${c}” ออกเสียง อะ เต็มเสียง จึงประวิสรรชนีย์ ส่วนคำอื่นออกเสียง อะ กึ่งเสียง`});
+      } else if(v===1){
+        const c=pickW(nopra), ds=shuffle(pra).slice(0,3);
+        const opts=shuffle([c,...ds]);
+        out.push({type:'mc',prompt:'คำถาม',word:'ข้อใดเป็นคำ “ไม่ประวิสรรชนีย์”',choices:opts.map(t=>({t})),correct:opts.indexOf(c),
+          explain:`“${c}” ออกเสียง อะ กึ่งเสียง / เป็นอักษรนำ จึงไม่ประวิสรรชนีย์`});
+      } else if(v===2){
+        const src=shuffle(srcPool).slice(0,4);
+        const ci=rnd(4);
+        const opts=src.map((o,k)=> k===ci ? o.w : mangle(o.w,o.t));
+        out.push({type:'mc',prompt:'คำถาม',word:'ข้อใดเขียนถูกต้อง',choices:opts.map(t=>({t})),correct:ci,
+          explain:`“${src[ci].w}” เขียนถูกต้องตามหลัก${src[ci].t==='pra'?'การประวิสรรชนีย์':'การไม่ประวิสรรชนีย์'} ส่วนข้ออื่นเติม/ตัดรูปสระ -ะ ผิดที่`});
+      } else {
+        const src=shuffle(srcPool).slice(0,4);
+        const wi=rnd(4);
+        const opts=src.map((o,k)=> k===wi ? mangle(o.w,o.t) : o.w);
+        out.push({type:'mc',prompt:'คำถาม',word:'ข้อใดเขียน “ผิด”',choices:opts.map(t=>({t})),correct:wi,
+          explain:`ที่ถูกต้องคือ “${src[wi].w}” ${src[wi].t==='pra'?'ต้องประวิสรรชนีย์':'ต้องไม่ประวิสรรชนีย์'}`});
+      }
+    }
+    else {
+      let tries=0, r;
+      do { r = RULES[rnd(RULES.length)]; tries++; } while(usedR.has(r.q) && tries<40);
+      usedR.add(r.q);
+      const order=shuffle([0,1,2,3]);
+      const opts=order.map(k=>({t:r.a[k]}));
+      out.push({type:'rule',prompt:'ข้อสอบหลักเกณฑ์',word:r.q,choices:opts,correct:order.indexOf(0),explain:r.x});
+    }
+  }
+  return out;
+}
+
+/* =======================================================================
+   PLAYER
+   ======================================================================= */
+const P = { pin:null, id:null, name:'', emoji:'🦊', unsubRoom:null, unsubMe:null,
+            qIndex:-1, t0:0, timer:null, locked:false, limit:15, prankLeft:0,
+            pendingHex:null, order:null, me:null, roster:[], curChoices:0 };
+
+function buildEmojiGrid(){
+  const g=$('#emojiGrid'); g.innerHTML='';
+  EMOJIS.forEach(e=>{ const b=document.createElement('button'); b.textContent=e; b.type='button';
+    b.onclick=()=>{ g.querySelectorAll('button').forEach(x=>x.classList.remove('sel')); b.classList.add('sel'); P.emoji=e; };
+    g.appendChild(b); });
+  g.firstChild.classList.add('sel'); P.emoji=EMOJIS[0];
+}
+
+$('#btnGoJoin').onclick = async ()=>{
+  const pin=$('#inPin').value.trim();
+  if(!/^\d{6}$/.test(pin)) return toast('กรุณากรอก PIN 6 หลัก');
+  const s=await getDoc(doc(db,'rooms',pin));
+  if(!s.exists()) return toast('ไม่พบห้องนี้ กรุณาตรวจสอบ PIN');
+  if(s.data().status==='ended') return toast('ห้องนี้จบเกมไปแล้ว');
+  P.pin=pin; $('#joinPinTxt').textContent=pin; show('scJoin');
+};
+$('#btnJoinBack').onclick = ()=>show('scHome');
+
+$('#btnJoin').onclick = async ()=>{
+  const name=$('#inName').value.trim();
+  if(name.length<1) return toast('กรุณาใส่ชื่อผู้เล่น');
+  $('#btnJoin').disabled=true;
+  try{
+    P.name=name;
+    const ref = await addDoc(collection(db,'rooms',P.pin,'players'), {
+      name, emoji:P.emoji, score:0, streak:0, best:0, correct:0, joinedAt:Date.now()
+    });
+    P.id=ref.id;
+    localStorage.setItem('wis_'+P.pin, JSON.stringify({id:P.id,name,emoji:P.emoji}));
+    $('#waitEmoji').textContent=P.emoji; $('#waitName').textContent=name;
+    $('#pMe').textContent=P.emoji+' '+name;
+    show('scWait'); listenRoom(); listenMe();
+  }catch(e){ console.error(e); toast('เข้าห้องไม่สำเร็จ: '+e.message); $('#btnJoin').disabled=false; }
+};
+
+function listenMe(){
+  P.unsubMe && P.unsubMe();
+  P.unsubMe = onSnapshot(doc(db,'rooms',P.pin,'players',P.id), s=>{
+    if(!s.exists()) return;
+    const d=s.data(); P.me=d;
+    $('#pScore').textContent = (d.score||0).toLocaleString();
+    if(d.hex && d.hex.q !== undefined && d.hex.q > P.qIndex) P.pendingHex = d.hex;
+    if(P.lastRoom && P.lastRoom.status==='reveal' && d.last && d.last.q===P.lastRoom.qIndex && !P.fbDone){
+      P.fbDone=true; renderReveal(P.lastRoom);
+    }
+  });
+}
+
+function listenRoom(){
+  P.unsubRoom && P.unsubRoom();
+  P.unsubRoom = onSnapshot(doc(db,'rooms',P.pin), s=>{
+    if(!s.exists()){ toast('ห้องถูกปิดแล้ว'); return; }
+    const r=s.data();
+    P.limit = r.timeLimit||15;
+    P.roster = r.roster||[];
+    if(r.status==='lobby'){
+      $('#waitCount').textContent = Math.max(r.playerCount||0, 1);
+      show('scWait');
+    }
+    else if(r.status==='question'){
+      if(r.qIndex!==P.qIndex) renderQuestion(r);
+    }
+    else if(r.status==='reveal'){ P.lastRoom=r; P.fbDone=false; renderReveal(r); }
+    else if(r.status==='ended'){ renderEnd(r); }
+  });
+}
+
+function renderQuestion(r){
+  P.qIndex = r.qIndex; P.locked=false;
+  if(!P.prankInit){ P.prankInit=true; P.prankLeft = r.prankPer||0; }
+  const q=r.current;
+  $('#pQn').textContent=r.qIndex+1; $('#pQt').textContent=r.qTotal;
+  $('#pPrompt').innerHTML = esc(q.prompt);
+  $('#pWord').textContent = q.word;
+  $('#pWord').style.fontSize = q.word.length>18 ? 'clamp(20px,5vw,34px)' : '';
+  $('#pLocked').classList.add('hide');
+  const box=$('#pAnswers'); box.classList.toggle('two', q.type==='sw'); box.classList.toggle('four', q.type!=='sw');
+  P.curChoices=q.choices.length;
+  let order=[...q.choices.keys()];
+  let limit=P.limit, fog=false, flip=false;
+
+  // apply prank
+  const hex = (P.pendingHex && P.pendingHex.q===r.qIndex) ? P.pendingHex : null;
+  if(hex){
+    if(hex.t==='mix')  order=shuffle(order);
+    if(hex.t==='rush') limit=Math.max(5, limit-5);
+    if(hex.t==='fog')  fog=true;
+    if(hex.t==='flip') flip=true;
+    showHex(hex);
+    P.pendingHex=null;
+  }
+  P.order=order;
+
+  box.innerHTML = order.map((oi,pos)=>{
+    const c=q.choices[oi];
+    return `<button class="ans a${pos}" data-i="${oi}">
+      <span>${esc(c.t)}${c.s?`<small style="display:block">${esc(c.s)}</small>`:''}</span></button>`;
+  }).join('');
+  box.querySelectorAll('.ans').forEach(b=> b.onclick=()=>answer(+b.dataset.i, b));
+
+  const card=$('#pWord').parentElement;
+  card.style.filter=''; card.style.transform='';
+  if(fog){ card.style.filter='blur(14px)'; setTimeout(()=>card.style.transition='filter .5s',50); setTimeout(()=>card.style.filter='',4000); }
+  if(flip){ document.querySelector('#scPlay').style.transform='rotate(180deg)'; setTimeout(()=>{document.querySelector('#scPlay').style.transition='transform .6s';document.querySelector('#scPlay').style.transform='';},5000); }
+
+  show('scPlay');
+  startTimer(limit);
+}
+
+function showHex(h){
+  const p = PRANKS.find(x=>x.id===h.t)||PRANKS[0];
+  $('#hexIcon').textContent=p.e; $('#hexTitle').textContent='โดนแกล้ง! '+p.n;
+  $('#hexBy').textContent='จาก '+(h.by||'เพื่อนลึกลับ')+' '+(h.e||'😈');
+  const b=$('#hexBanner'); b.style.opacity='1'; b.style.transform='translate(-50%,-50%) scale(1)';
+  setTimeout(()=>{ b.style.opacity='0'; b.style.transform='translate(-50%,-50%) scale(.4)'; }, 2600);
+}
+
+function startTimer(limit){
+  clearInterval(P.timer);
+  P.t0=Date.now(); P.limitMs=limit*1000;
+  const el=$('#pTimer');
+  const tick=()=>{
+    const left=Math.max(0, P.limitMs-(Date.now()-P.t0));
+    const sec=Math.ceil(left/1000);
+    el.querySelector('span').textContent=sec;
+    el.style.setProperty('--p',(left/P.limitMs*100)+'%');
+    el.classList.toggle('low', sec<=5);
+    if(left<=0){ clearInterval(P.timer); if(!P.locked) lockOut(); }
+  };
+  tick(); P.timer=setInterval(tick,120);
+}
+
+async function answer(i, btn){
+  if(P.locked) return; P.locked=true; clearInterval(P.timer);
+  const ms=Date.now()-P.t0;
+  $('#pAnswers').querySelectorAll('.ans').forEach(b=>{ if(b!==btn) b.classList.add('dim'); });
+  $('#pLockEmoji').textContent='✅'; $('#pLocked').classList.remove('hide');
+  try{
+    await setDoc(doc(db,'rooms',P.pin,'answers',`q${P.qIndex}_${P.id}`),
+      { pid:P.id, q:P.qIndex, c:i, ms });
+  }catch(e){ console.warn(e); }
+}
+function lockOut(){
+  P.locked=true;
+  $('#pAnswers').querySelectorAll('.ans').forEach(b=>b.classList.add('dim'));
+  $('#pLockEmoji').textContent='⏰'; $('#pLocked').querySelector('h3').textContent='หมดเวลา!';
+  $('#pLocked').classList.remove('hide');
+}
+
+function renderReveal(r){
+  clearInterval(P.timer);
+  const last = P.me && P.me.last && P.me.last.q===r.qIndex ? P.me.last : null;
+  const ok = last ? last.ok : false;
+  $('#fbIcon').textContent = ok?'🎉':'😢';
+  $('#fbTxt').textContent  = ok?'ถูกต้อง!':(last&&last.c===-1?'ไม่ทันเวลา':'ยังไม่ถูกนะ');
+  $('#fbPts').textContent  = '+'+((last&&last.pts)||0).toLocaleString()+' คะแนน';
+  $('#fbStreak').textContent = ok && last.st>1 ? `🔥 ตอบถูกติดต่อกัน ${last.st} ข้อ (โบนัส +${Math.min(last.st-1,5)*STREAK_BONUS})` : '';
+  const cc = r.current.choices[r.correct];
+  $('#fbExplain').innerHTML = `<b>เฉลย: ${esc(cc.t)}</b><br>${r.explain||''}`;
+  $('#fbTotal').textContent = ((last&&last.total)||(P.me&&P.me.score)||0).toLocaleString();
+  $('#fbRank').textContent  = (last&&last.rank)||'-';
+  $('#fbOf').textContent    = r.playerCount||'-';
+  // prank bar
+  const canPrank = (r.prankPer||0)>0 && P.prankLeft>0 && r.qIndex < r.qTotal-1;
+  $('#prankBar').style.display = canPrank?'block':'none';
+  $('#prankLeft').textContent = P.prankLeft;
+  $('#prankDone').style.display='none';
+  $('#btnPrank').disabled=false;
+  show('scFb');
+}
+
+function renderEnd(r){
+  clearInterval(P.timer);
+  const top=r.top||[];
+  const mine = top.find(t=>t.id===P.id);
+  const rank = mine ? mine.r : (P.me&&P.me.lastRank) || '-';
+  $('#endEmoji').textContent = P.emoji;
+  $('#endName').textContent  = P.name;
+  $('#endRank').textContent  = rank;
+  $('#endScore').textContent = ((P.me&&P.me.score)||0).toLocaleString();
+  $('#endDetail').textContent = `ตอบถูก ${(P.me&&P.me.correct)||0} ข้อ จาก ${r.qTotal} ข้อ • สตรีคสูงสุด ${(P.me&&P.me.best)||0}`;
+  $('#endLb').innerHTML = top.map(t=>`
+    <div class="lb-item ${t.r<=3?'g'+t.r:''}"><div class="rk">${t.r<=3?['🥇','🥈','🥉'][t.r-1]:t.r}</div>
+    <div class="e">${esc(t.e)}</div><div class="nm">${esc(t.n)}</div><div class="sc">${t.s.toLocaleString()}</div></div>`).join('');
+  show('scEnd');
+}
+
+/* ---------- prank UI ---------- */
+let prankPick=null;
+$('#btnPrank').onclick=()=>{
+  prankPick=null;
+  $('#prankTypes').className='answers four';
+  $('#prankTypes').innerHTML = PRANKS.map((p,i)=>`<button class="ans a${i}" data-p="${p.id}">
+    <span>${p.e} ${p.n}<small style="display:block;font-weight:400;font-size:13px">${p.d}</small></span></button>`).join('');
+  $('#prankTypes').querySelectorAll('.ans').forEach(b=>b.onclick=()=>{
+    prankPick=b.dataset.p;
+    $('#prankTypes').querySelectorAll('.ans').forEach(x=>x.classList.remove('right'));
+    b.classList.add('right'); renderTargets();
+  });
+  $('#prankSearch').value=''; renderTargets();
+  $('#prankModal').style.display='block';
+};
+$('#prankClose').onclick=()=>{ $('#prankModal').style.display='none'; };
+$('#prankSearch').oninput=renderTargets;
+function renderTargets(){
+  const kw=$('#prankSearch').value.trim();
+  const list=P.roster.filter(x=>x.id!==P.id && (!kw || x.n.includes(kw))).slice(0,60);
+  $('#prankTargets').innerHTML = list.length? list.map(x=>`
+    <div class="lb-item" data-t="${x.id}" style="cursor:pointer">
+      <div class="e">${esc(x.e)}</div><div class="nm">${esc(x.n)}</div>
+      <div class="sc">😈 แกล้ง</div></div>`).join('') : '<p class="muted">ไม่พบผู้เล่น</p>';
+  $('#prankTargets').querySelectorAll('[data-t]').forEach(el=>el.onclick=()=>sendPrank(el.dataset.t));
+}
+async function sendPrank(target){
+  if(!prankPick) return toast('เลือกลูกเล่นก่อนนะ');
+  if(P.prankLeft<=0) return toast('ไอเทมหมดแล้ว');
+  try{
+    await updateDoc(doc(db,'rooms',P.pin,'players',target),
+      { hex:{ t:prankPick, by:P.name, e:P.emoji, q:P.qIndex+1 } });
+    P.prankLeft--; P.prankUsed=(P.prankUsed||0)+1;
+    $('#prankLeft').textContent=P.prankLeft;
+    const tn=(P.roster.find(x=>x.id===target)||{}).n||'เพื่อน';
+    $('#prankDone').textContent=`ส่งลูกเล่นไปหา ${tn} เรียบร้อย! จะทำงานในข้อถัดไป 😈`;
+    $('#prankDone').style.display='block';
+    if(P.prankLeft<=0) $('#btnPrank').disabled=true;
+    $('#prankModal').style.display='none';
+    toast('แกล้ง '+tn+' สำเร็จ!');
+  }catch(e){ toast('ส่งไม่สำเร็จ: '+e.message); }
+}
+
+/* =======================================================================
+   HOST / ADMIN
+   ======================================================================= */
+const H = { pin:null, quiz:[], qIndex:-1, timeLimit:15, prankPer:2,
+            players:new Map(), unsubPlayers:null, unsubAns:null, timer:null,
+            lastCountWrite:0, answers:new Map(), revealed:false };
+
+function roomRef(){ return doc(db,'rooms',H.pin); }
+
+$('#btnAdminLogin').onclick = async ()=>{
+  if($('#inAdminPass').value !== ADMIN_PASS) return toast('รหัสผ่านไม่ถูกต้อง');
+  sessionStorage.setItem('wis_admin','1');
+  await loadBank(); renderWords(); renderRules(); show('scHostMenu');
+};
+$('#btnAdminBack').onclick = ()=>{ location.hash=''; show('scHome'); };
+$('#btnBackMenu').onclick  = ()=>{ show('scHostMenu'); };
+
+$$('.tabs button').forEach(b=> b.onclick=()=>{
+  $$('.tabs button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  $$('.tabpane').forEach(p=>p.classList.add('hide'));
+  $('#'+b.dataset.tab).classList.remove('hide');
+});
+
+/* ---------- create room ---------- */
+async function genPin(){
+  for(let i=0;i<12;i++){
+    const p=String(100000+rnd(900000));
+    const s=await getDoc(doc(db,'rooms',p));
+    if(!s.exists()) return p;
+  }
+  return String(Date.now()).slice(-6);
+}
+$('#btnCreateRoom').onclick = async ()=>{
+  const btn=$('#btnCreateRoom'); btn.disabled=true; btn.textContent='กำลังสร้างห้อง…';
+  try{
+    await loadBank();
+    const count=+$('#cfgCount').value, tl=+$('#cfgTime').value, mode=$('#cfgMix').value, pp=+$('#cfgPrank').value;
+    H.quiz = buildQuestions(count, mode);
+    H.timeLimit=tl; H.prankPer=pp; H.qIndex=-1;
+    H.pin = await genPin();
+    await setDoc(roomRef(), { status:'lobby', qTotal:count, qIndex:-1, timeLimit:tl, prankPer:pp,
+      playerCount:0, roster:[], createdAt:Date.now() });
+    await setDoc(doc(db,'rooms',H.pin,'private','quiz'), { items:H.quiz, timeLimit:tl, prankPer:pp });
+    openLobby();
+  }catch(e){ console.error(e); toast('สร้างห้องไม่สำเร็จ: '+e.message); }
+  btn.disabled=false; btn.textContent='สร้างห้อง + แสดง QR Code';
+};
+
+$('#btnResume').onclick = async ()=>{
+  const pin=$('#inResumePin').value.trim();
+  if(!/^\d{6}$/.test(pin)) return toast('กรอก PIN 6 หลัก');
+  const [r,q] = await Promise.all([getDoc(doc(db,'rooms',pin)), getDoc(doc(db,'rooms',pin,'private','quiz'))]);
+  if(!r.exists()) return toast('ไม่พบห้องนี้');
+  H.pin=pin; const d=r.data();
+  H.quiz = q.exists()? q.data().items : [];
+  H.timeLimit=d.timeLimit||15; H.prankPer=d.prankPer||0; H.qIndex=d.qIndex??-1;
+  const ps=await getDocs(collection(db,'rooms',pin,'players'));
+  H.players.clear(); ps.forEach(p=>H.players.set(p.id,{id:p.id,...p.data()}));
+  if(d.status==='lobby') openLobby(); else { renderHostQuestionUI(H.quiz[H.qIndex]); show('scHostGame'); refreshDash(); toast('เข้าควบคุมห้องเดิมแล้ว'); }
+};
+
+function openLobby(){
+  $('#hostPin').textContent = H.pin.replace(/(\d{3})(\d{3})/,'$1 $2');
+  const base = location.origin + location.pathname;
+  $('#siteUrl').textContent = base.replace(/^https?:\/\//,'');
+  $('#qrBox').innerHTML='';
+  try{ new QRCode($('#qrBox'), { text: base+'#join='+H.pin, width:200, height:200, correctLevel:QRCode.CorrectLevel.M }); }
+  catch(e){ $('#qrBox').innerHTML='<div style="color:#333;padding:20px">สร้าง QR ไม่ได้<br>ให้ใช้ PIN แทน</div>'; }
+  H.players.clear(); renderHostPlayers();
+  H.unsubPlayers && H.unsubPlayers();
+  H.unsubPlayers = onSnapshot(collection(db,'rooms',H.pin,'players'), snap=>{
+    snap.docChanges().forEach(c=>{
+      if(c.type==='removed') H.players.delete(c.doc.id);
+      else H.players.set(c.doc.id, {id:c.doc.id, ...c.doc.data()});
+    });
+    renderHostPlayers();
+    const now=Date.now();
+    if(now-H.lastCountWrite>15000){ H.lastCountWrite=now;
+      updateDoc(roomRef(),{playerCount:H.players.size}).catch(()=>{}); }
+  });
+  show('scHostLobby');
+}
+function renderHostPlayers(){
+  $('#hostCount').textContent=H.players.size;
+  $('#hostPlayers').innerHTML=[...H.players.values()].slice(-120)
+    .map(p=>`<span class="chip"><span class="e">${esc(p.emoji)}</span>${esc(p.name)}</span>`).join('');
+}
+$('#btnCancelRoom').onclick = async ()=>{
+  if(!confirm('ยกเลิกห้องนี้?')) return;
+  H.unsubPlayers && H.unsubPlayers();
+  try{ await deleteDoc(roomRef()); }catch(e){}
+  H.pin=null; show('scHostMenu');
+};
+
+/* ---------- start / questions ---------- */
+$('#btnStartGame').onclick = async ()=>{
+  if(H.players.size===0 && !confirm('ยังไม่มีผู้เล่นในห้อง เริ่มเลยหรือไม่?')) return;
+  H.unsubPlayers && H.unsubPlayers(); H.unsubPlayers=null;   // ประหยัดโควตา: เลิกฟังระหว่างเล่น
+  const roster=[...H.players.values()].map(p=>({id:p.id,n:p.name,e:p.emoji}));
+  await updateDoc(roomRef(), { roster, playerCount:H.players.size });
+  H.qIndex=-1; nextQuestion();
+};
+
+async function nextQuestion(){
+  H.qIndex++;
+  if(H.qIndex>=H.quiz.length) return endGame();
+  const q=H.quiz[H.qIndex];
+  H.revealed=false; H.answers.clear();
+  const pub = { type:q.type, prompt:q.prompt, word:q.word, choices:q.choices };
+  await updateDoc(roomRef(), { status:'question', qIndex:H.qIndex, current:pub,
+    correct:null, explain:null, startAt:Date.now() });
+  renderHostQuestionUI(q);
+  show('scHostGame');
+  // live answer count
+  H.unsubAns && H.unsubAns();
+  H.unsubAns = onSnapshot(query(collection(db,'rooms',H.pin,'answers'), where('q','==',H.qIndex)), s=>{
+    s.docChanges().forEach(c=>{ if(c.type!=='removed') H.answers.set(c.doc.data().pid, c.doc.data()); });
+    $('#hAnsCount').textContent=H.answers.size;
+    if(H.answers.size>0 && H.answers.size>=H.players.size && !H.revealed) setTimeout(()=>doReveal(),600);
+  });
+  startHostTimer();
+}
+
+function renderHostQuestionUI(q){
+  if(!q) return;
+  $('#hQn').textContent=H.qIndex+1; $('#hQt').textContent=H.quiz.length; $('#hPin').textContent=H.pin;
+  $('#hPrompt').textContent=q.prompt;
+  $('#hWord').textContent=q.word;
+  $('#hWord').style.fontSize = q.word.length>18 ? 'clamp(20px,4vw,34px)' : '';
+  const box=$('#hAnswers'); box.classList.toggle('two',q.type==='sw'); box.classList.toggle('four',q.type!=='sw');
+  box.innerHTML=q.choices.map((c,i)=>`<div class="ans a${i}" data-i="${i}"><span>${esc(c.t)}${c.s?`<small style="display:block">${esc(c.s)}</small>`:''}</span></div>`).join('');
+  $('#hAnsCount').textContent=0; $('#hPlayerCount').textContent=H.players.size;
+  $('#hBars').innerHTML=''; $('#hExplain').classList.add('hide');
+  $('#btnNextQ').classList.add('hide'); $('#btnSkip').classList.remove('hide');
+}
+
+function startHostTimer(){
+  clearInterval(H.timer);
+  const t0=Date.now(), ms=H.timeLimit*1000, el=$('#hTimer');
+  const tick=()=>{
+    const left=Math.max(0, ms-(Date.now()-t0));
+    el.querySelector('span').textContent=Math.ceil(left/1000);
+    el.style.setProperty('--p',(left/ms*100)+'%');
+    el.classList.toggle('low', left<=5000);
+    if(left<=0){ clearInterval(H.timer); if(!H.revealed) doReveal(); }
+  };
+  tick(); H.timer=setInterval(tick,150);
+}
+$('#btnSkip').onclick = ()=>{ if(!H.revealed) doReveal(); };
+$('#btnNextQ').onclick = ()=> nextQuestion();
+$('#btnEndNow').onclick = ()=>{ if(confirm('จบเกมทันทีและแสดงผลสรุป?')) endGame(); };
+
+async function doReveal(){
+  if(H.revealed) return; H.revealed=true;
+  clearInterval(H.timer); H.unsubAns && H.unsubAns(); H.unsubAns=null;
+  const q=H.quiz[H.qIndex], limitMs=H.timeLimit*1000;
+  const counts=Array(q.choices.length).fill(0);
+  let correctN=0, fastest=null;
+
+  // ensure we have players (กรณี host เพิ่งเข้ามาคุมห้อง)
+  if(H.players.size===0){
+    const ps=await getDocs(collection(db,'rooms',H.pin,'players'));
+    ps.forEach(p=>H.players.set(p.id,{id:p.id,...p.data()}));
+  }
+
+  const results=[];
+  H.players.forEach(p=>{
+    const a=H.answers.get(p.id);
+    let ok=false, pts=0, c=-1, ms=limitMs;
+    if(a){ c=a.c; ms=Math.min(a.ms, limitMs); counts[c]=(counts[c]||0)+1; ok = (c===q.correct); }
+    if(ok){
+      correctN++;
+      pts = Math.round(BASE_SCORE*(1 - 0.5*Math.min(1, ms/limitMs)));
+      p.streak=(p.streak||0)+1;
+      pts += Math.min(p.streak-1,5)*STREAK_BONUS;
+      p.best=Math.max(p.best||0, p.streak);
+      p.correct=(p.correct||0)+1;
+      if(!fastest || ms<fastest.ms) fastest={n:p.name,e:p.emoji,ms};
+    } else { p.streak=0; }
+    p.score=(p.score||0)+pts;
+    results.push({p, ok, pts, c, st:p.streak});
+  });
+
+  const sorted=[...H.players.values()].sort((a,b)=>(b.score||0)-(a.score||0));
+  const rankOf=new Map(); sorted.forEach((p,i)=>rankOf.set(p.id,i+1));
+
+  // batch write (เขียนรวมครั้งเดียวต่อข้อ)
+  let batch=writeBatch(db), n=0;
+  for(const r of results){
+    batch.update(doc(db,'rooms',H.pin,'players',r.p.id), {
+      score:r.p.score, streak:r.p.streak, best:r.p.best||0, correct:r.p.correct||0,
+      last:{ q:H.qIndex, ok:r.ok, pts:r.pts, c:r.c, st:r.st, total:r.p.score, rank:rankOf.get(r.p.id) },
+      lastRank: rankOf.get(r.p.id)
+    });
+    if(++n>=450){ await batch.commit(); batch=writeBatch(db); n=0; }
+  }
+  if(n) await batch.commit();
+
+  const top=sorted.slice(0,10).map((p,i)=>({id:p.id,n:p.name,e:p.emoji,s:p.score||0,r:i+1}));
+  await updateDoc(roomRef(), { status:'reveal', correct:q.correct, explain:q.explain, top, playerCount:H.players.size });
+
+  // host UI
+  const total=H.players.size||1;
+  $('#hAnswers').querySelectorAll('.ans').forEach(el=>{
+    const i=+el.dataset.i;
+    el.classList.toggle('right', i===q.correct);
+    el.classList.toggle('wrong', i!==q.correct);
+  });
+  $('#hBars').innerHTML=q.choices.map((c,i)=>{
+    const pc=Math.round((counts[i]||0)/total*100);
+    return `<div class="bar"><i class="a${i}" style="background:var(--c${i+1});width:${pc}%"></i>
+      <span><span>${i===q.correct?'✅ ':''}${esc(c.t)}</span><span>${counts[i]||0} คน (${pc}%)</span></span></div>`;
+  }).join('');
+  $('#hExplain').innerHTML=`<b>เฉลย: ${esc(q.choices[q.correct].t)}</b><br>${q.explain||''}`;
+  $('#hExplain').classList.remove('hide');
+  $('#btnNextQ').classList.remove('hide');
+  $('#btnNextQ').textContent = H.qIndex>=H.quiz.length-1 ? 'ดูผลสรุป 🏆' : 'ข้อถัดไป ▶';
+  $('#btnSkip').classList.add('hide');
+  $('#stCorrect').textContent = Math.round(correctN/total*100)+'%';
+  $('#stFast').textContent = fastest ? `${fastest.e} ${(fastest.ms/1000).toFixed(1)}s` : '-';
+  refreshDash();
+}
+
+function refreshDash(){
+  const arr=[...H.players.values()].sort((a,b)=>(b.score||0)-(a.score||0));
+  const avg=arr.length? Math.round(arr.reduce((s,p)=>s+(p.score||0),0)/arr.length):0;
+  $('#stAvg').textContent=avg.toLocaleString();
+  const bs=arr.reduce((m,p)=>Math.max(m,p.best||0),0);
+  const bp=arr.find(p=>(p.best||0)===bs&&bs>0);
+  $('#stStreak').textContent= bs? `${bp?bp.emoji:''} ${bs}` : '-';
+  $('#hPlayerCount').textContent=H.players.size;
+  const lim = H.showAllLb ? arr.length : 12;
+  $('#hLbRows').innerHTML=arr.slice(0,lim).map((p,i)=>`
+    <tr><td style="font-family:Mitr;font-weight:700">${i<3?['🥇','🥈','🥉'][i]:i+1}</td>
+    <td>${esc(p.emoji)} ${esc(p.name)}</td><td>${p.correct||0}</td>
+    <td>${(p.streak||0)>1?'🔥'+p.streak:(p.streak||0)}</td>
+    <td style="font-family:Mitr;font-weight:700;color:#fde047">${(p.score||0).toLocaleString()}</td></tr>`).join('');
+}
+$('#btnLbMore').onclick=()=>{ H.showAllLb=!H.showAllLb; $('#btnLbMore').textContent=H.showAllLb?'ย่อ':'ดูทั้งหมด'; refreshDash(); };
+
+async function endGame(){
+  clearInterval(H.timer); H.unsubAns && H.unsubAns();
+  const arr=[...H.players.values()].sort((a,b)=>(b.score||0)-(a.score||0));
+  const top=arr.slice(0,20).map((p,i)=>({id:p.id,n:p.name,e:p.emoji,s:p.score||0,r:i+1,c:p.correct||0}));
+  await updateDoc(roomRef(), { status:'ended', top, playerCount:H.players.size });
+  $('#endPinTxt').textContent=H.pin;
+  const pod=[arr[1],arr[0],arr[2]], cls=['p2','p1','p3'], md=['🥈','🥇','🥉'];
+  $('#hostPodium').innerHTML=pod.map((p,i)=>p?`
+    <div class="pod ${cls[i]}"><div class="e">${esc(p.emoji)}</div><div class="nm">${esc(p.name)}</div>
+    <div class="bx">${md[i]}</div><div class="sc">${(p.score||0).toLocaleString()}</div></div>`:'').join('');
+  $('#hostEndRows').innerHTML=arr.map((p,i)=>`
+    <tr><td>${i+1}</td><td>${esc(p.emoji)} ${esc(p.name)}</td><td>${p.correct||0}</td>
+    <td style="font-family:Mitr;font-weight:700;color:#fde047">${(p.score||0).toLocaleString()}</td></tr>`).join('');
+  show('scHostEnd');
+}
+$('#btnCsv').onclick=()=>{
+  const arr=[...H.players.values()].sort((a,b)=>(b.score||0)-(a.score||0));
+  let csv='﻿อันดับ,ชื่อ,ตัวละคร,ตอบถูก,สตรีคสูงสุด,คะแนนรวม\n';
+  arr.forEach((p,i)=>{ csv+=`${i+1},"${p.name}",${p.emoji},${p.correct||0},${p.best||0},${p.score||0}\n`; });
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`ผลเกมวิสรรชนีย์_${H.pin}.csv`; a.click();
+};
+
+/* =======================================================================
+   จัดการคลังคำ / ข้อสอบ
+   ======================================================================= */
+function renderWords(){
+  const kw=$('#inWordSearch').value.trim();
+  $('#wCount').textContent=WORDS.length;
+  const rows=WORDS.map((o,i)=>({...o,i})).filter(o=>!kw||o.w.includes(kw));
+  $('#wordRows').innerHTML=rows.map(o=>`<tr>
+    <td>${o.i+1}</td><td style="font-size:17px">${esc(o.w)}</td>
+    <td><span class="badge ${o.t==='pra'?'ok':'no'}">${o.t==='pra'?'ประวิสรรชนีย์':'ไม่ประวิสรรชนีย์'}</span></td>
+    <td><button class="btn-sm btn-no" data-del="${o.i}">ลบ</button></td></tr>`).join('');
+  $('#wordRows').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{ WORDS.splice(+b.dataset.del,1); renderWords(); });
+}
+$('#inWordSearch').oninput=renderWords;
+$('#btnAddWord').onclick=()=>{
+  const w=$('#inWord').value.trim(); if(!w) return toast('พิมพ์คำก่อน');
+  if(WORDS.some(x=>x.w===w)) return toast('มีคำนี้อยู่แล้ว');
+  WORDS.push({w, t:$('#inWordType').value}); $('#inWord').value=''; renderWords(); toast('เพิ่มคำแล้ว (อย่าลืมกดบันทึก)');
+};
+$('#btnResetWords').onclick=()=>{ if(confirm('คืนค่าคลังคำตั้งต้น 100 คำ?')){ WORDS=defWords(); renderWords(); } };
+$('#btnExportWords').onclick=()=>{
+  let t='คลังคำเกมสนุกสนานวิสรรชนีย์\n\n== ประวิสรรชนีย์ ==\n';
+  WORDS.filter(x=>x.t==='pra').forEach((x,i)=>t+=`${i+1}. ${x.w}\n`);
+  t+='\n== ไม่ประวิสรรชนีย์ ==\n';
+  WORDS.filter(x=>x.t==='nopra').forEach((x,i)=>t+=`${i+1}. ${x.w}\n`);
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['﻿'+t],{type:'text/plain;charset=utf-8'}));
+  a.download='คลังคำวิสรรชนีย์.txt'; a.click();
+};
+$('#btnSaveWords').onclick=async ()=>{
+  try{ await setDoc(doc(db,'bank','words'),{items:WORDS,updatedAt:Date.now()}); toast('บันทึกคลังคำเรียบร้อย ✅'); }
+  catch(e){ toast('บันทึกไม่สำเร็จ: '+e.message); }
+};
+
+function renderRules(){
+  $('#rCount').textContent=RULES.length;
+  $('#ruleRows').innerHTML=RULES.map((r,i)=>`<tr><td>${i+1}</td>
+    <td>${esc(r.q)}<br><span class="muted">✅ ${esc(r.a[0])}</span></td>
+    <td><button class="btn-sm btn-no" data-dr="${i}">ลบ</button></td></tr>`).join('');
+  $('#ruleRows').querySelectorAll('[data-dr]').forEach(b=>b.onclick=()=>{ RULES.splice(+b.dataset.dr,1); renderRules(); });
+}
+$('#btnAddRule').onclick=()=>{
+  const q=$('#inRQ').value.trim(), a=[0,1,2,3].map(i=>$('#inRA'+i).value.trim());
+  if(!q||a.some(x=>!x)) return toast('กรอกคำถามและตัวเลือกให้ครบ 4 ข้อ');
+  RULES.push({q,a,x:$('#inREx').value.trim()});
+  ['#inRQ','#inRA0','#inRA1','#inRA2','#inRA3','#inREx'].forEach(s=>$(s).value='');
+  renderRules(); toast('เพิ่มข้อสอบแล้ว (อย่าลืมกดบันทึก)');
+};
+$('#btnResetRules').onclick=()=>{ if(confirm('คืนค่าข้อสอบตั้งต้น?')){ RULES=DEF_RULES.map(r=>({...r})); renderRules(); } };
+$('#btnSaveRules').onclick=async ()=>{
+  try{ await setDoc(doc(db,'bank','rules'),{items:RULES,updatedAt:Date.now()}); toast('บันทึกข้อสอบเรียบร้อย ✅'); }
+  catch(e){ toast('บันทึกไม่สำเร็จ: '+e.message); }
+};
+
+/* =======================================================================
+   ROUTING
+   ======================================================================= */
+buildEmojiGrid();
+function route(){
+  const h=location.hash||'';
+  const m=h.match(/#join=(\d{6})/);
+  if(m){ $('#inPin').value=m[1]; show('scHome'); setTimeout(()=>$('#btnGoJoin').click(),350); return; }
+  if(h.startsWith('#host')){
+    if(sessionStorage.getItem('wis_admin')==='1'){ loadBank().then(()=>{ renderWords(); renderRules(); show('scHostMenu'); }); }
+    else show('scHostLogin');
+    return;
+  }
+  show('scHome');
+}
+route();
+window.addEventListener('hashchange', ()=>{
+  if(P.pin && P.id) return;                 // ผู้เล่นที่อยู่ในเกมแล้ว ไม่ต้อง route ใหม่
+  if(H.pin && H.qIndex>=0) return;          // ครูที่กำลังคุมเกม ไม่ต้อง route ใหม่
+  route();
+});
+window.addEventListener('beforeunload', e=>{ if(H.pin && H.qIndex>=0 && H.qIndex<H.quiz.length){ e.preventDefault(); e.returnValue=''; } });
+$('#inPin').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#btnGoJoin').click(); });
+$('#inName').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#btnJoin').click(); });
+$('#inAdminPass').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#btnAdminLogin').click(); });
+</script>
+</body>
+</html>
