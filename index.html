@@ -203,6 +203,46 @@ th{color:var(--muted);font-weight:600;font-size:13px}
 @keyframes bnc{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-13px);opacity:1}}
 .scoreline{display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,.28);border-radius:14px;padding:12px 16px;margin-bottom:12px}
 .scoreline b{font-family:'Mitr';font-size:22px;color:#fde047}
+
+/* ---------- feedback FX ---------- */
+#flash{position:fixed;inset:0;z-index:70;pointer-events:none;opacity:0;transition:opacity .25s}
+#flash.on{opacity:1}
+#flash.ok{background:radial-gradient(circle at 50% 45%,rgba(34,197,94,.48),rgba(21,128,61,.82) 70%)}
+#flash.no{background:radial-gradient(circle at 50% 45%,rgba(239,68,68,.48),rgba(153,27,27,.82) 70%)}
+#flash .mark{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%) scale(.3);
+  font-size:clamp(110px,34vw,220px);filter:drop-shadow(0 12px 30px rgba(0,0,0,.5));opacity:0}
+#flash.on .mark{animation:markIn .65s cubic-bezier(.2,1.6,.4,1) forwards}
+@keyframes markIn{0%{transform:translate(-50%,-50%) scale(.2) rotate(-18deg);opacity:0}
+  60%{transform:translate(-50%,-50%) scale(1.18) rotate(6deg);opacity:1}
+  100%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1}}
+#flash .word{position:absolute;left:50%;top:70%;transform:translate(-50%,-50%);
+  font-family:'Mitr';font-weight:700;font-size:clamp(28px,9vw,58px);text-shadow:0 6px 22px rgba(0,0,0,.5);
+  opacity:0;animation:none}
+#flash.on .word{animation:wordIn .5s .25s ease forwards}
+@keyframes wordIn{from{opacity:0;transform:translate(-50%,-20%)}to{opacity:1;transform:translate(-50%,-50%)}}
+#confetti{position:fixed;inset:0;z-index:71;pointer-events:none;overflow:hidden}
+#confetti i{position:absolute;width:11px;height:16px;border-radius:2px;animation:fall linear forwards}
+@keyframes fall{0%{transform:translateY(-12vh) rotate(0);opacity:1}
+  100%{transform:translateY(112vh) rotate(720deg);opacity:.15}}
+.fb.ok{box-shadow:0 0 0 4px rgba(34,197,94,.65), 0 12px 40px rgba(34,197,94,.35);background:rgba(34,197,94,.14)}
+.fb.no{box-shadow:0 0 0 4px rgba(239,68,68,.6), 0 12px 40px rgba(239,68,68,.3);background:rgba(239,68,68,.12);animation:shake .5s}
+@keyframes shake{10%,90%{transform:translateX(-5px)}20%,80%{transform:translateX(7px)}
+  30%,50%,70%{transform:translateX(-10px)}40%,60%{transform:translateX(10px)}}
+.fb.ok .big{animation:bounceIn .7s cubic-bezier(.2,1.6,.4,1)}
+@keyframes bounceIn{0%{transform:scale(.2)}55%{transform:scale(1.25)}100%{transform:scale(1)}}
+.ans.right{outline:5px solid #22c55e;animation:glowOk .9s infinite alternate}
+@keyframes glowOk{to{box-shadow:0 0 34px 8px rgba(34,197,94,.85)}}
+.bar i.win{animation:barPulse 1s infinite alternate}
+@keyframes barPulse{to{filter:brightness(1.45)}}
+
+/* ---------- floating controls ---------- */
+.fixctl{position:fixed;right:12px;top:calc(10px + env(safe-area-inset-top,0px));z-index:60;display:flex;gap:8px}
+.fixctl button{font-size:18px;padding:8px 12px;border-radius:12px;background:rgba(0,0,0,.42);box-shadow:none;border:1px solid rgba(255,255,255,.2)}
+.toggle{display:flex;align-items:center;gap:9px;background:rgba(0,0,0,.26);border-radius:999px;padding:7px 14px;font-size:14px;cursor:pointer;user-select:none}
+.toggle .sw{width:44px;height:24px;border-radius:999px;background:rgba(255,255,255,.24);position:relative;transition:background .2s;flex:none}
+.toggle .sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s}
+.toggle.on .sw{background:#22c55e}
+.toggle.on .sw::after{transform:translateX(20px)}
 </style>
 </head>
 <body>
@@ -365,6 +405,7 @@ th{color:var(--muted);font-weight:600;font-size:13px}
     <button class="on" data-tab="tabNew">🎮 สร้างห้องเล่น</button>
     <button data-tab="tabWords">📚 คลังคำศัพท์</button>
     <button data-tab="tabRules">📖 ข้อสอบหลักเกณฑ์</button>
+    <button data-tab="tabSys">⚙️ ตั้งค่าระบบ</button>
     <button data-tab="tabHelp">❔ วิธีใช้</button>
   </div>
 
@@ -385,6 +426,16 @@ th{color:var(--muted);font-weight:600;font-size:13px}
             <option value="mc">เฉพาะ 4 ตัวเลือก</option>
             <option value="rule">เฉพาะ ข้อสอบหลักเกณฑ์</option>
           </select></div>
+        <div class="grow field"><label>เล่นอัตโนมัติ (ขึ้นข้อถัดไปเอง)</label>
+          <select id="cfgAuto">
+            <option value="0" selected>ปิด — ครูกดเอง</option>
+            <option value="4">เปิด — หน่วง 4 วินาที</option>
+            <option value="6">เปิด — หน่วง 6 วินาที</option>
+            <option value="8">เปิด — หน่วง 8 วินาที</option>
+            <option value="10">เปิด — หน่วง 10 วินาที</option>
+          </select></div>
+      </div>
+      <div class="row">
         <div class="grow field"><label>ไอเทมแกล้งเพื่อน / คน</label>
           <select id="cfgPrank"><option value="0">ปิดใช้งาน</option><option value="1">1 ชิ้น</option><option value="2" selected>2 ชิ้น</option><option value="3">3 ชิ้น</option></select></div>
       </div>
@@ -451,6 +502,29 @@ th{color:var(--muted);font-weight:600;font-size:13px}
     </div>
   </div>
 
+  <div id="tabSys" class="tabpane hide">
+    <div class="card">
+      <h3>🎵 เพลงประกอบ</h3>
+      <p class="muted">วาง <b>direct link</b> ของไฟล์เสียง (.mp3 / .m4a / .ogg) เช่นลิงก์จาก GitHub raw, Cloudinary หรือเว็บโฮสต์เพลงที่เปิดไฟล์ตรงได้<br>
+        ⚠️ ลิงก์แชร์ของ Google Drive / YouTube ใช้ไม่ได้ ต้องเป็นลิงก์ที่ลงท้ายด้วยชื่อไฟล์เสียงจริง</p>
+      <div class="field"><label>เพลงพื้นหลังระหว่างเล่นเกม</label>
+        <div class="row"><input class="grow" id="inBgm" placeholder="https://.../background.mp3">
+          <button class="btn-sm btn-ghost" id="btnTestBgm">▶ ทดสอบ</button></div></div>
+      <div class="field"><label>เพลงหน้าสรุปอันดับ / ประกาศผล</label>
+        <div class="row"><input class="grow" id="inEndm" placeholder="https://.../victory.mp3">
+          <button class="btn-sm btn-ghost" id="btnTestEnd">▶ ทดสอบ</button></div></div>
+      <div class="row">
+        <div class="grow field"><label>ระดับเสียงเพลง (%)</label>
+          <select id="inVol"><option>10</option><option>20</option><option selected>30</option><option>40</option><option>50</option><option>70</option></select></div>
+        <div class="grow field"><label>เสียงเอฟเฟกต์ (ตอบถูก/ผิด/นับถอยหลัง)</label>
+          <select id="inSfx"><option value="1" selected>เปิด</option><option value="0">ปิด</option></select></div>
+      </div>
+      <button class="btn-sm btn-no" id="btnStopTest">■ หยุดทดสอบ</button>
+      <button class="btn-lg" id="btnSaveSys" style="margin-top:12px">💾 บันทึกการตั้งค่าขึ้น Firestore</button>
+      <p class="muted" style="margin-top:8px">การตั้งค่านี้จะถูกฝังลงในห้องที่สร้างใหม่ ทำให้เครื่องนักเรียนเล่นเพลงเดียวกันโดยไม่เปลืองโควตาอ่านข้อมูล</p>
+    </div>
+  </div>
+
   <div id="tabHelp" class="tabpane hide">
     <div class="card">
       <h3>วิธีใช้งาน</h3>
@@ -509,6 +583,7 @@ th{color:var(--muted);font-weight:600;font-size:13px}
     <div class="row between">
       <span>ตอบแล้ว <b id="hAnsCount">0</b> / <span id="hPlayerCount">0</span> คน</span>
       <div class="row" style="gap:8px">
+        <div class="toggle" id="tgAuto"><span class="sw"></span><span>เล่นอัตโนมัติ</span></div>
         <button class="btn-sm btn-warn" id="btnSkip">⏭ เฉลยเลย</button>
         <button class="btn-sm btn-no" id="btnEndNow">⏹ จบเกม</button>
       </div>
@@ -557,6 +632,13 @@ th{color:var(--muted);font-weight:600;font-size:13px}
 
 </div><!-- /wrap -->
 </div><!-- /app -->
+<div id="flash"><div class="mark">✅</div><div class="word">ถูกต้อง!</div></div>
+<div id="confetti"></div>
+<div class="fixctl" id="fixCtl" style="display:none">
+  <button id="btnMute" title="เปิด/ปิดเสียง">🔊</button>
+</div>
+<audio id="bgm" loop playsinline preload="none"></audio>
+<audio id="endm" loop playsinline preload="none"></audio>
 <div class="toast" id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -599,8 +681,75 @@ function show(id){
   $$('.screen').forEach(s=>{ if(s.id!=='prankModal') s.classList.remove('on'); });
   const el=$('#'+id); if(el) el.classList.add('on');
   const pb=$('#prankBar'); if(pb && id!=='scFb') pb.style.display='none';
+  const fc=$('#fixCtl');
+  if(fc) fc.style.display = ['scHome','scJoin','scHostLogin','scHostMenu'].includes(id) ? 'none' : 'flex';
   if(id!=='scFb'){ const pm=$('#prankModal'); if(pm) pm.style.display='none'; }
   window.scrollTo(0,0);
+}
+
+/* =======================================================================
+   ระบบเสียง : SFX สังเคราะห์ด้วย WebAudio (ไม่ต้องโหลดไฟล์) + เพลงประกอบ
+   ======================================================================= */
+const SND = { ctx:null, muted: localStorage.getItem('wis_mute')==='1', sfxOn:true, vol:0.3 };
+function ac(){
+  if(!SND.ctx){ try{ SND.ctx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ return null; } }
+  if(SND.ctx.state==='suspended') SND.ctx.resume().catch(()=>{});
+  return SND.ctx;
+}
+function tone(freq, t0, dur, type='sine', gain=0.22){
+  const c=ac(); if(!c) return;
+  const o=c.createOscillator(), g=c.createGain();
+  o.type=type; o.frequency.setValueAtTime(freq, c.currentTime+t0);
+  g.gain.setValueAtTime(0.0001, c.currentTime+t0);
+  g.gain.exponentialRampToValueAtTime(gain, c.currentTime+t0+0.015);
+  g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime+t0+dur);
+  o.connect(g); g.connect(c.destination);
+  o.start(c.currentTime+t0); o.stop(c.currentTime+t0+dur+0.03);
+}
+function slide(f1,f2,t0,dur,type='sawtooth',gain=0.18){
+  const c=ac(); if(!c) return;
+  const o=c.createOscillator(), g=c.createGain();
+  o.type=type;
+  o.frequency.setValueAtTime(f1,c.currentTime+t0);
+  o.frequency.exponentialRampToValueAtTime(Math.max(40,f2), c.currentTime+t0+dur);
+  g.gain.setValueAtTime(gain,c.currentTime+t0);
+  g.gain.exponentialRampToValueAtTime(0.0001,c.currentTime+t0+dur);
+  o.connect(g); g.connect(c.destination);
+  o.start(c.currentTime+t0); o.stop(c.currentTime+t0+dur+0.03);
+}
+function sfx(name){
+  if(SND.muted || !SND.sfxOn) return;
+  switch(name){
+    case 'tap':     tone(660,0,.07,'triangle',.16); break;
+    case 'join':    tone(523,0,.1,'sine',.2); tone(784,.09,.14,'sine',.2); break;
+    case 'start':   [392,523,659,784].forEach((f,i)=>tone(f,i*.1,.2,'triangle',.2)); break;
+    case 'q':       tone(880,0,.09,'square',.12); tone(1175,.08,.12,'square',.12); break;
+    case 'tick':    tone(1000,0,.05,'square',.09); break;
+    case 'tickend': tone(700,0,.14,'square',.14); break;
+    case 'correct': [523,659,784,1047].forEach((f,i)=>tone(f,i*.085,.32,'triangle',.24)); break;
+    case 'wrong':   slide(300,90,0,.45,'sawtooth',.2); tone(160,.05,.35,'square',.14); break;
+    case 'reveal':  slide(300,900,0,.25,'triangle',.14); break;
+    case 'prank':   [660,520,660,520,780].forEach((f,i)=>tone(f,i*.07,.1,'square',.16)); break;
+    case 'hex':     slide(900,200,0,.5,'sine',.2); break;
+    case 'podium':  [523,659,784,1047,784,1047,1319].forEach((f,i)=>tone(f,i*.14,.45,'triangle',.26)); break;
+  }
+}
+const bgmEl=()=>document.getElementById('bgm');
+const endmEl=()=>document.getElementById('endm');
+function playMusic(el,url){
+  if(!url || SND.muted) return;
+  try{ if(el.src!==url) el.src=url; el.volume=SND.vol; el.currentTime=el.currentTime||0; el.play().catch(()=>{}); }catch(e){}
+}
+function stopMusic(el){ try{ el.pause(); }catch(e){} }
+function updateMuteBtn(){ const b=document.getElementById('btnMute'); if(b) b.textContent = SND.muted?'🔇':'🔊'; }
+function initAudioUI(){
+  const b=document.getElementById('btnMute'); if(!b) return;
+  updateMuteBtn();
+  b.onclick=()=>{
+    SND.muted=!SND.muted; localStorage.setItem('wis_mute', SND.muted?'1':'0'); updateMuteBtn();
+    if(SND.muted){ stopMusic(bgmEl()); stopMusic(endmEl()); }
+    else { ac(); }
+  };
 }
 
 /* ---------------- default word bank ---------------- */
@@ -645,12 +794,15 @@ const PRANKS = [
    ======================================================================= */
 let WORDS = defWords();
 let RULES = DEF_RULES.map(r=>({...r}));
+let SYS   = { bgm:'', endm:'', vol:30, sfx:1 };
 
 async function loadBank(){
   try{
-    const [w,r] = await Promise.all([getDoc(doc(db,'bank','words')), getDoc(doc(db,'bank','rules'))]);
+    const [w,r,g] = await Promise.all([
+      getDoc(doc(db,'bank','words')), getDoc(doc(db,'bank','rules')), getDoc(doc(db,'bank','settings'))]);
     if(w.exists() && Array.isArray(w.data().items) && w.data().items.length) WORDS = w.data().items;
     if(r.exists() && Array.isArray(r.data().items) && r.data().items.length) RULES = r.data().items;
+    if(g.exists()){ SYS={...SYS,...g.data()}; SND.vol=(SYS.vol||30)/100; SND.sfxOn=!!(+SYS.sfx); }
   }catch(e){ console.warn('loadBank',e); }
 }
 
@@ -767,6 +919,7 @@ $('#btnJoin').onclick = async ()=>{
     });
     P.id=ref.id;
     localStorage.setItem('wis_'+P.pin, JSON.stringify({id:P.id,name,emoji:P.emoji}));
+    ac(); sfx('join'); initAudioUI(); $('#fixCtl').style.display='flex';
     $('#waitEmoji').textContent=P.emoji; $('#waitName').textContent=name;
     $('#pMe').textContent=P.emoji+' '+name;
     show('scWait'); listenRoom(); listenMe();
@@ -793,6 +946,7 @@ function listenRoom(){
     const r=s.data();
     P.limit = r.timeLimit||15;
     P.roster = r.roster||[];
+    if(r.snd && !P.sndSet){ P.sndSet=true; SND.vol=(r.snd.vol||30)/100; SND.sfxOn=!!(+((r.snd.sfx)??1)); P.bgmUrl=r.snd.bgm||''; P.endUrl=r.snd.endm||''; }
     if(r.status==='lobby'){
       $('#waitCount').textContent = Math.max(r.playerCount||0, 1);
       show('scWait');
@@ -844,11 +998,37 @@ function renderQuestion(r){
   if(flip){ document.querySelector('#scPlay').style.transform='rotate(180deg)'; setTimeout(()=>{document.querySelector('#scPlay').style.transition='transform .6s';document.querySelector('#scPlay').style.transform='';},5000); }
 
   show('scPlay');
+  hideFlash();
+  sfx(hex?'hex':'q');
+  if(P.bgmUrl) playMusic(bgmEl(), P.bgmUrl);
   startTimer(limit);
 }
 
+function hideFlash(){ const f=$('#flash'); f.classList.remove('on','ok','no'); $('#confetti').innerHTML=''; }
+function bigFlash(ok){
+  const f=$('#flash');
+  f.className='on '+(ok?'ok':'no');
+  f.querySelector('.mark').textContent = ok?'✅':'❌';
+  f.querySelector('.word').textContent = ok?'ถูกต้อง!':'ยังไม่ถูก';
+  setTimeout(()=>f.classList.remove('on'), ok?1250:1050);
+  if(ok) confetti();
+}
+function confetti(n=44){
+  const box=$('#confetti'); box.innerHTML='';
+  const cols=['#fde047','#22c55e','#60a5fa','#f472b6','#fb923c','#fff'];
+  for(let i=0;i<n;i++){
+    const el=document.createElement('i');
+    el.style.left=(Math.random()*100)+'vw';
+    el.style.background=cols[rnd(cols.length)];
+    el.style.animationDuration=(1.6+Math.random()*1.6)+'s';
+    el.style.animationDelay=(Math.random()*.45)+'s';
+    box.appendChild(el);
+  }
+  setTimeout(()=>box.innerHTML='',3200);
+}
+
 function showHex(h){
-  const p = PRANKS.find(x=>x.id===h.t)||PRANKS[0];
+  const p = PRANKS.find(x=>x.id===h.t)||PRANKS[0]; sfx('hex');
   $('#hexIcon').textContent=p.e; $('#hexTitle').textContent='โดนแกล้ง! '+p.n;
   $('#hexBy').textContent='จาก '+(h.by||'เพื่อนลึกลับ')+' '+(h.e||'😈');
   const b=$('#hexBanner'); b.style.opacity='1'; b.style.transform='translate(-50%,-50%) scale(1)';
@@ -865,6 +1045,7 @@ function startTimer(limit){
     el.querySelector('span').textContent=sec;
     el.style.setProperty('--p',(left/P.limitMs*100)+'%');
     el.classList.toggle('low', sec<=5);
+    if(!P.locked && sec<=5 && sec>0 && sec!==P.lastSec){ P.lastSec=sec; sfx(sec===1?'tickend':'tick'); }
     if(left<=0){ clearInterval(P.timer); if(!P.locked) lockOut(); }
   };
   tick(); P.timer=setInterval(tick,120);
@@ -872,7 +1053,7 @@ function startTimer(limit){
 
 async function answer(i, btn){
   if(P.locked) return; P.locked=true; clearInterval(P.timer);
-  const ms=Date.now()-P.t0;
+  const ms=Date.now()-P.t0; sfx('tap');
   $('#pAnswers').querySelectorAll('.ans').forEach(b=>{ if(b!==btn) b.classList.add('dim'); });
   $('#pLockEmoji').textContent='✅'; $('#pLocked').classList.remove('hide');
   try{
@@ -895,6 +1076,10 @@ function renderReveal(r){
   $('#fbTxt').textContent  = ok?'ถูกต้อง!':(last&&last.c===-1?'ไม่ทันเวลา':'ยังไม่ถูกนะ');
   $('#fbPts').textContent  = '+'+((last&&last.pts)||0).toLocaleString()+' คะแนน';
   $('#fbStreak').textContent = ok && last.st>1 ? `🔥 ตอบถูกติดต่อกัน ${last.st} ข้อ (โบนัส +${Math.min(last.st-1,5)*STREAK_BONUS})` : '';
+  const fbCard=$('#fbIcon').closest('.fb');
+  fbCard.classList.remove('ok','no'); void fbCard.offsetWidth;
+  fbCard.classList.add(ok?'ok':'no');
+  if(!P.fxQ || P.fxQ!==r.qIndex){ P.fxQ=r.qIndex; bigFlash(ok); sfx(ok?'correct':'wrong'); }
   const cc = r.current.choices[r.correct];
   $('#fbExplain').innerHTML = `<b>เฉลย: ${esc(cc.t)}</b><br>${r.explain||''}`;
   $('#fbTotal').textContent = ((last&&last.total)||(P.me&&P.me.score)||0).toLocaleString();
@@ -910,7 +1095,9 @@ function renderReveal(r){
 }
 
 function renderEnd(r){
-  clearInterval(P.timer);
+  clearInterval(P.timer); hideFlash();
+  stopMusic(bgmEl());
+  if(!P.endPlayed){ P.endPlayed=true; sfx('podium'); confetti(70); if(P.endUrl) playMusic(endmEl(), P.endUrl); }
   const top=r.top||[];
   const mine = top.find(t=>t.id===P.id);
   const rank = mine ? mine.r : (P.me&&P.me.lastRank) || '-';
@@ -952,6 +1139,7 @@ function renderTargets(){
   $('#prankTargets').querySelectorAll('[data-t]').forEach(el=>el.onclick=()=>sendPrank(el.dataset.t));
 }
 async function sendPrank(target){
+  sfx('prank');
   if(!prankPick) return toast('เลือกลูกเล่นก่อนนะ');
   if(P.prankLeft<=0) return toast('ไอเทมหมดแล้ว');
   try{
@@ -973,17 +1161,45 @@ async function sendPrank(target){
    ======================================================================= */
 const H = { pin:null, quiz:[], qIndex:-1, timeLimit:15, prankPer:2,
             players:new Map(), unsubPlayers:null, unsubAns:null, timer:null,
-            lastCountWrite:0, answers:new Map(), revealed:false };
+            lastCountWrite:0, answers:new Map(), revealed:false,
+            autoPlay:false, autoDelay:6, autoT:null, autoLeft:0 };
 
 function roomRef(){ return doc(db,'rooms',H.pin); }
+
+function syncAutoUI(){
+  const t=$('#tgAuto'); if(!t) return;
+  t.classList.toggle('on', H.autoPlay);
+  t.querySelector('span:last-child').textContent = H.autoPlay ? ('อัตโนมัติ '+H.autoDelay+'s') : 'เล่นอัตโนมัติ';
+}
+function cancelAuto(){ clearInterval(H.autoT); H.autoT=null; }
+function startAutoCountdown(){
+  cancelAuto();
+  if(!H.autoPlay) return;
+  H.autoLeft=H.autoDelay;
+  const btn=$('#btnNextQ');
+  const label = H.qIndex>=H.quiz.length-1 ? 'ดูผลสรุป 🏆' : 'ข้อถัดไป ▶';
+  const tick=()=>{
+    if(!H.autoPlay){ cancelAuto(); btn.textContent=label; return; }
+    btn.textContent = `${label}  (${H.autoLeft})`;
+    if(H.autoLeft<=0){ cancelAuto(); btn.textContent=label; nextQuestion(); return; }
+    H.autoLeft--;
+  };
+  tick(); H.autoT=setInterval(tick,1000);
+}
+$('#tgAuto').onclick=()=>{
+  H.autoPlay=!H.autoPlay; syncAutoUI(); sfx('tap');
+  if(H.autoPlay){ toast('เปิดโหมดเล่นอัตโนมัติ (หน่วง '+H.autoDelay+' วินาที)'); if(H.revealed) startAutoCountdown(); }
+  else { cancelAuto(); toast('ปิดโหมดอัตโนมัติ — ครูกดข้อถัดไปเอง');
+         const btn=$('#btnNextQ'); btn.textContent = H.qIndex>=H.quiz.length-1?'ดูผลสรุป 🏆':'ข้อถัดไป ▶'; }
+};
 
 $('#btnAdminLogin').onclick = async ()=>{
   if($('#inAdminPass').value !== ADMIN_PASS) return toast('รหัสผ่านไม่ถูกต้อง');
   sessionStorage.setItem('wis_admin','1');
-  await loadBank(); renderWords(); renderRules(); show('scHostMenu');
+  await loadBank(); renderWords(); renderRules(); renderSys(); show('scHostMenu');
 };
 $('#btnAdminBack').onclick = ()=>{ location.hash=''; show('scHome'); };
-$('#btnBackMenu').onclick  = ()=>{ show('scHostMenu'); };
+$('#btnBackMenu').onclick  = ()=>{ cancelAuto(); stopMusic(endmEl()); stopMusic(bgmEl()); show('scHostMenu'); };
 
 $$('.tabs button').forEach(b=> b.onclick=()=>{
   $$('.tabs button').forEach(x=>x.classList.remove('on')); b.classList.add('on');
@@ -1005,12 +1221,17 @@ $('#btnCreateRoom').onclick = async ()=>{
   try{
     await loadBank();
     const count=+$('#cfgCount').value, tl=+$('#cfgTime').value, mode=$('#cfgMix').value, pp=+$('#cfgPrank').value;
+    const au=+$('#cfgAuto').value;
+    H.autoPlay = au>0; H.autoDelay = au>0?au:6;
+    SND.vol=(SYS.vol||30)/100; SND.sfxOn=!!(+SYS.sfx);
     H.quiz = buildQuestions(count, mode);
     H.timeLimit=tl; H.prankPer=pp; H.qIndex=-1;
     H.pin = await genPin();
     await setDoc(roomRef(), { status:'lobby', qTotal:count, qIndex:-1, timeLimit:tl, prankPer:pp,
-      playerCount:0, roster:[], createdAt:Date.now() });
+      playerCount:0, roster:[], createdAt:Date.now(),
+      snd:{ bgm:SYS.bgm||'', endm:SYS.endm||'', vol:SYS.vol||30, sfx:+SYS.sfx } });
     await setDoc(doc(db,'rooms',H.pin,'private','quiz'), { items:H.quiz, timeLimit:tl, prankPer:pp });
+    ac(); initAudioUI(); $('#fixCtl').style.display='flex'; syncAutoUI();
     openLobby();
   }catch(e){ console.error(e); toast('สร้างห้องไม่สำเร็จ: '+e.message); }
   btn.disabled=false; btn.textContent='สร้างห้อง + แสดง QR Code';
@@ -1024,6 +1245,8 @@ $('#btnResume').onclick = async ()=>{
   H.pin=pin; const d=r.data();
   H.quiz = q.exists()? q.data().items : [];
   H.timeLimit=d.timeLimit||15; H.prankPer=d.prankPer||0; H.qIndex=d.qIndex??-1;
+  if(d.snd){ SYS={...SYS, bgm:d.snd.bgm, endm:d.snd.endm, vol:d.snd.vol, sfx:d.snd.sfx}; SND.vol=(d.snd.vol||30)/100; SND.sfxOn=!!(+d.snd.sfx); }
+  ac(); initAudioUI(); $('#fixCtl').style.display='flex'; syncAutoUI();
   const ps=await getDocs(collection(db,'rooms',pin,'players'));
   H.players.clear(); ps.forEach(p=>H.players.set(p.id,{id:p.id,...p.data()}));
   if(d.status==='lobby') openLobby(); else { renderHostQuestionUI(H.quiz[H.qIndex]); show('scHostGame'); refreshDash(); toast('เข้าควบคุมห้องเดิมแล้ว'); }
@@ -1057,6 +1280,7 @@ function renderHostPlayers(){
 }
 $('#btnCancelRoom').onclick = async ()=>{
   if(!confirm('ยกเลิกห้องนี้?')) return;
+  cancelAuto(); stopMusic(bgmEl()); stopMusic(endmEl());
   H.unsubPlayers && H.unsubPlayers();
   try{ await deleteDoc(roomRef()); }catch(e){}
   H.pin=null; show('scHostMenu');
@@ -1068,7 +1292,7 @@ $('#btnStartGame').onclick = async ()=>{
   H.unsubPlayers && H.unsubPlayers(); H.unsubPlayers=null;   // ประหยัดโควตา: เลิกฟังระหว่างเล่น
   const roster=[...H.players.values()].map(p=>({id:p.id,n:p.name,e:p.emoji}));
   await updateDoc(roomRef(), { roster, playerCount:H.players.size });
-  H.qIndex=-1; nextQuestion();
+  H.qIndex=-1; sfx('start'); nextQuestion();
 };
 
 async function nextQuestion(){
@@ -1079,8 +1303,11 @@ async function nextQuestion(){
   const pub = { type:q.type, prompt:q.prompt, word:q.word, choices:q.choices };
   await updateDoc(roomRef(), { status:'question', qIndex:H.qIndex, current:pub,
     correct:null, explain:null, startAt:Date.now() });
+  cancelAuto();
   renderHostQuestionUI(q);
-  show('scHostGame');
+  show('scHostGame'); syncAutoUI();
+  sfx('q');
+  if(SYS.bgm) playMusic(bgmEl(), SYS.bgm);
   // live answer count
   H.unsubAns && H.unsubAns();
   H.unsubAns = onSnapshot(query(collection(db,'rooms',H.pin,'answers'), where('q','==',H.qIndex)), s=>{
@@ -1112,12 +1339,14 @@ function startHostTimer(){
     el.querySelector('span').textContent=Math.ceil(left/1000);
     el.style.setProperty('--p',(left/ms*100)+'%');
     el.classList.toggle('low', left<=5000);
+    const sec=Math.ceil(left/1000);
+    if(sec<=5 && sec>0 && sec!==H.lastSec){ H.lastSec=sec; sfx(sec===1?'tickend':'tick'); }
     if(left<=0){ clearInterval(H.timer); if(!H.revealed) doReveal(); }
   };
   tick(); H.timer=setInterval(tick,150);
 }
 $('#btnSkip').onclick = ()=>{ if(!H.revealed) doReveal(); };
-$('#btnNextQ').onclick = ()=> nextQuestion();
+$('#btnNextQ').onclick = ()=>{ cancelAuto(); nextQuestion(); };
 $('#btnEndNow').onclick = ()=>{ if(confirm('จบเกมทันทีและแสดงผลสรุป?')) endGame(); };
 
 async function doReveal(){
@@ -1176,9 +1405,11 @@ async function doReveal(){
     el.classList.toggle('right', i===q.correct);
     el.classList.toggle('wrong', i!==q.correct);
   });
+  sfx('reveal'); setTimeout(()=>sfx(correctN>0?'correct':'wrong'),320);
+  if(correctN>0) confetti(30);
   $('#hBars').innerHTML=q.choices.map((c,i)=>{
     const pc=Math.round((counts[i]||0)/total*100);
-    return `<div class="bar"><i class="a${i}" style="background:var(--c${i+1});width:${pc}%"></i>
+    return `<div class="bar"><i class="a${i} ${i===q.correct?'win':''}" style="background:var(--c${i+1});width:${pc}%"></i>
       <span><span>${i===q.correct?'✅ ':''}${esc(c.t)}</span><span>${counts[i]||0} คน (${pc}%)</span></span></div>`;
   }).join('');
   $('#hExplain').innerHTML=`<b>เฉลย: ${esc(q.choices[q.correct].t)}</b><br>${q.explain||''}`;
@@ -1189,6 +1420,7 @@ async function doReveal(){
   $('#stCorrect').textContent = Math.round(correctN/total*100)+'%';
   $('#stFast').textContent = fastest ? `${fastest.e} ${(fastest.ms/1000).toFixed(1)}s` : '-';
   refreshDash();
+  startAutoCountdown();
 }
 
 function refreshDash(){
@@ -1209,7 +1441,9 @@ function refreshDash(){
 $('#btnLbMore').onclick=()=>{ H.showAllLb=!H.showAllLb; $('#btnLbMore').textContent=H.showAllLb?'ย่อ':'ดูทั้งหมด'; refreshDash(); };
 
 async function endGame(){
-  clearInterval(H.timer); H.unsubAns && H.unsubAns();
+  clearInterval(H.timer); cancelAuto(); H.unsubAns && H.unsubAns();
+  stopMusic(bgmEl()); sfx('podium'); confetti(80);
+  if(SYS.endm) playMusic(endmEl(), SYS.endm);
   const arr=[...H.players.values()].sort((a,b)=>(b.score||0)-(a.score||0));
   const top=arr.slice(0,20).map((p,i)=>({id:p.id,n:p.name,e:p.emoji,s:p.score||0,r:i+1,c:p.correct||0}));
   await updateDoc(roomRef(), { status:'ended', top, playerCount:H.players.size });
@@ -1285,6 +1519,27 @@ $('#btnSaveRules').onclick=async ()=>{
   catch(e){ toast('บันทึกไม่สำเร็จ: '+e.message); }
 };
 
+/* ---------- ตั้งค่าระบบ (เพลง / เสียง) ---------- */
+function renderSys(){
+  $('#inBgm').value=SYS.bgm||''; $('#inEndm').value=SYS.endm||'';
+  $('#inVol').value=String(SYS.vol||30); $('#inSfx').value=String(+SYS.sfx);
+}
+$('#btnTestBgm').onclick=()=>{ ac(); SND.muted=false; localStorage.setItem('wis_mute','0'); updateMuteBtn();
+  SND.vol=(+$('#inVol').value)/100; const u=$('#inBgm').value.trim();
+  if(!u) return toast('ยังไม่ได้วางลิงก์เพลง'); stopMusic(endmEl()); playMusic(bgmEl(),u); toast('กำลังทดสอบเพลงพื้นหลัง'); };
+$('#btnTestEnd').onclick=()=>{ ac(); SND.muted=false; localStorage.setItem('wis_mute','0'); updateMuteBtn();
+  SND.vol=(+$('#inVol').value)/100; const u=$('#inEndm').value.trim();
+  if(!u) return toast('ยังไม่ได้วางลิงก์เพลง'); stopMusic(bgmEl()); playMusic(endmEl(),u); toast('กำลังทดสอบเพลงสรุปผล'); };
+$('#btnStopTest').onclick=()=>{ stopMusic(bgmEl()); stopMusic(endmEl()); };
+$('#btnSaveSys').onclick=async ()=>{
+  SYS={ bgm:$('#inBgm').value.trim(), endm:$('#inEndm').value.trim(),
+        vol:+$('#inVol').value, sfx:+$('#inSfx').value };
+  SND.vol=SYS.vol/100; SND.sfxOn=!!SYS.sfx;
+  try{ await setDoc(doc(db,'bank','settings'),{...SYS,updatedAt:Date.now()}); toast('บันทึกการตั้งค่าเรียบร้อย ✅'); }
+  catch(e){ toast('บันทึกไม่สำเร็จ: '+e.message); }
+};
+['#inBgm','#inEndm'].forEach(sel=>$(sel).addEventListener('change',()=>{ SYS[sel==='#inBgm'?'bgm':'endm']=$(sel).value.trim(); }));
+
 /* =======================================================================
    ROUTING
    ======================================================================= */
@@ -1294,7 +1549,7 @@ function route(){
   const m=h.match(/#join=(\d{6})/);
   if(m){ $('#inPin').value=m[1]; show('scHome'); setTimeout(()=>$('#btnGoJoin').click(),350); return; }
   if(h.startsWith('#host')){
-    if(sessionStorage.getItem('wis_admin')==='1'){ loadBank().then(()=>{ renderWords(); renderRules(); show('scHostMenu'); }); }
+    if(sessionStorage.getItem('wis_admin')==='1'){ loadBank().then(()=>{ renderWords(); renderRules(); renderSys(); show('scHostMenu'); }); }
     else show('scHostLogin');
     return;
   }
